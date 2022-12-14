@@ -1,0 +1,21 @@
+# 应用名称
+spring:
+  application:
+    name: word-dictation
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    name: defaultDataSource
+    type: com.alibaba.druid.pool.DruidDataSource
+  profiles:
+    active: dev
+  jackson:
+    time-zone: Asia/Shanghai
+
+# myabtis-plus mapper文件位置
+mybatis-plus:
+  mapper-locations: classpath:mappers/*.xml
+  configuration-properties:
+    offsetAsPageNum: true
+    rowBoundsWidthCount: true
+    reasonable: true
+
