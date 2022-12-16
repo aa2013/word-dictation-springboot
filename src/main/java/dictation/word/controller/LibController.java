@@ -29,8 +29,13 @@ public class LibController {
         return libService.addLib(lib);
     }
 
-    @GetMapping("/list")
-    public PageInfo<LibInfo> list(int pageNum, int pageSize) {
-        return libService.getList(pageNum, pageSize);
+    @GetMapping("/list/self")
+    public PageInfo<LibInfo> listSelf(int pageNum, int pageSize) {
+        return libService.getListSelf(pageNum, pageSize);
+    }
+
+    @GetMapping("/list/common")
+    public PageInfo<LibInfo> listCommon(int pageNum, int pageSize) {
+        return libService.getListCommon(pageNum, pageSize);
     }
 }

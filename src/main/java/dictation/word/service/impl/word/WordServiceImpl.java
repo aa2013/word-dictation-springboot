@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -74,6 +75,9 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         if (!libWordService.save(new LibWord(lib.getId(), word.getId()))) {
             throw new CreateNewException("关联词库导入失败！");
         }
+        libService.update(Wrappers.<Lib>lambdaUpdate()
+                .eq(Lib::getId, lib.getId())
+                .set(Lib::getUpdateTime, new Date()));
         // 导入释义
         List<WordExplain> explains = new ArrayList<>(word.getExplains().size());
         for (Explain explain : word.getExplains()) {

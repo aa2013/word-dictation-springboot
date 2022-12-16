@@ -12,5 +12,7 @@ import dictation.word.entity.lib.tables.Lib;
 public interface LibService extends IService<Lib> {
     int addLib(Lib lib);
 
-    PageInfo<LibInfo> getList(int pageNum, int paseSize);
+    PageInfo<LibInfo> getListSelf(int pageNum, int pageSize);
+
+    PageInfo<LibInfo> getListCommon(int pageNum, int pageSize);
 }

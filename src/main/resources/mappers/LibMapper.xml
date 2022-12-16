@@ -3,9 +3,22 @@
 <mapper namespace="dictation.word.dao.lib.LibMapper">
 
     <select id="getLibList" resultType="dictation.word.entity.lib.LibInfo">
-        select lib.id, lib.lib_name, lib.common, u.user_name as creator
+        select lib.id, lib.lib_name, lib.common, u.user_name as creator,create_time,update_time
         from lib
-                 join user as u
-                      on (u.id = creator and creator = #{userId}) or common = 1
+        join user as u
+        on (u.id = creator
+        <if test="userId!=null">
+            and creator = #{userId}
+        </if>
+        )
+        <choose>
+            <when test="userId!=null">
+                or
+            </when>
+            <otherwise>
+                and
+            </otherwise>
+        </choose>
+        common = 1
     </select>
 </mapper>
