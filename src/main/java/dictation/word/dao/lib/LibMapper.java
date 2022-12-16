@@ -14,5 +14,5 @@ import java.util.List;
  */
 @Mapper
 public interface LibMapper extends BaseMapper<Lib> {
-    List<LibInfo> getLibList(@Param("userId") int userId);
+    List<LibInfo> getLibList(@Param("userId") Integer userId);
 }

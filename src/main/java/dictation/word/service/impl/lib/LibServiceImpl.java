@@ -25,8 +25,15 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
     LibMapper libMapper;
 
     @Override
-    public PageInfo<LibInfo> getList(int pageNum, int paseSize) {
-        PageHelper.startPage(pageNum, paseSize);
+    public PageInfo<LibInfo> getListCommon(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        final List<LibInfo> libs = libMapper.getLibList(null);
+        return new PageInfo<>(libs);
+    }
+
+    @Override
+    public PageInfo<LibInfo> getListSelf(int pageNum, int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
         final List<LibInfo> libs = libMapper.getLibList(getCurrentUserId());
         return new PageInfo<>(libs);
     }

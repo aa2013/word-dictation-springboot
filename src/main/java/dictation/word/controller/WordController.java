@@ -23,7 +23,6 @@ public class WordController {
 
     @PostMapping("/import/single")
     public List<Integer> importSingle(@Valid @RequestBody ImportWord word) {
-        System.out.println(word);
         return wordService.importSingle(word);
     }
     @GetMapping("/list")

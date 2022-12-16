@@ -26,4 +26,5 @@ public class Lib {
     @NotNull
     Boolean common = false;
     Date createTime;
+    Date updateTime;
 }
