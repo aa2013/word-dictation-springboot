@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dictation.word.dao.lib.LibMapper">
+
+    <select id="getLibList" resultType="dictation.word.entity.lib.LibInfo">
+        select lib.id, lib.lib_name, lib.common, u.user_name as creator
+        from lib
+                 join user as u
+                      on (u.id = creator and creator = #{userId}) or common = 1
+    </select>
+</mapper>

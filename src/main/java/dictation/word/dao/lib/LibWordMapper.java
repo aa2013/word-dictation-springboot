@@ -1,7 +1,7 @@
-package dictation.word.dao.book;
+package dictation.word.dao.lib;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import dictation.word.entity.book.BookWord;
+import dictation.word.entity.lib.tables.LibWord;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -9,5 +9,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @date 2022/12/14
  */
 @Mapper
-public interface BookWordMapper extends BaseMapper<BookWord> {
+public interface LibWordMapper extends BaseMapper<LibWord> {
 }
