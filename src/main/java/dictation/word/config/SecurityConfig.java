@@ -40,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
+        //忽略白名单
         web.ignoring().antMatchers(URL_LIST);
     }
 

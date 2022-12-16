@@ -33,9 +33,9 @@ public interface TokenService {
      *
      * @return userId
      */
-    default long getCurrentUserId() {
+    default int getCurrentUserId() {
         final JSONObject token = getCurrentToken();
-        return token.getLong("uid");
+        return token.getInteger("uid");
     }
 
     /**

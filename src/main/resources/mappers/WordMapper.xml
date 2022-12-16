@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dictation.word.dao.word.WordMapper">
+    <resultMap id="wordInfo" type="dictation.word.entity.word.WordInfo">
+        <result column="word_id" property="id"/>
+        <result column="word" property="word"/>
+        <result column="us_symbol" property="usSymbol"/>
+        <result column="en_symbol" property="enSymbol"/>
+        <collection property="explains" column="word_id" ofType="dictation.word.entity.word.WordExplainInfo">
+            <result property="explanation" column="explanation"/>
+            <result property="type" column="type"/>
+            <result property="libName" column="lib_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="getWordInfo" resultMap="wordInfo">
+        select we.*, t.word, t.en_symbol, t.us_symbol, lib.lib_name
+        from word_explain as we
+                 join (
+            select word.*, lw.lib_id
+            from word
+                     join lib_word as lw
+                          on lw.word_id = word.id and lw.lib_id = #{libId}
+        ) t
+                      on we.word_id = t.id
+                 join lib
+                      on lib.id = we.lib_id
+    </select>
+</mapper>

@@ -1,7 +1,7 @@
 package dictation.word.service.i.word;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import dictation.word.entity.word.WordExplain;
+import dictation.word.entity.word.tables.WordExplain;
 
 /**
  * @author ljh

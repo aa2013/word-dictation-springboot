@@ -42,7 +42,6 @@ public class ResponseHandler implements ResponseBodyAdvice<Object> {
     @SneakyThrows
     @Override
     public Object beforeBodyWrite(Object o, MethodParameter methodParameter, MediaType mediaType, Class<? extends HttpMessageConverter<?>> aClass, ServerHttpRequest request, ServerHttpResponse response) {
-        System.out.println(request.getURI().getPath());
         if (isRespExcludePaths(request.getURI().getPath())) {
             return o;
         }

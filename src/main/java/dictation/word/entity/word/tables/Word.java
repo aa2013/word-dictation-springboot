@@ -1,10 +1,12 @@
-package dictation.word.entity.book;
+package dictation.word.entity.word.tables;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author ljh
@@ -13,10 +15,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Book {
+public class Word {
     @TableId(type = IdType.AUTO)
     Integer id;
-    String bookName;
-    String creator;
-    Boolean common = false;
+    @NotBlank
+    String word;
+    String usSymbol;
+    String enSymbol;
 }

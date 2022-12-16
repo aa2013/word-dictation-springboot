@@ -57,6 +57,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             account = account != null ? account.trim() : "";
             String password = request.getParameter("password");
             password = password != null ? password.trim().replace(" ", "+") : "";
+            //解密密码与数据库比对
             password = RSAUtil.decrypt(password);
             UsernamePasswordAuthenticationToken authRequest =
                     new UsernamePasswordAuthenticationToken(account, password);

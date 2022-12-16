@@ -1,7 +1,7 @@
 package dictation.word.dao.word;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import dictation.word.entity.word.WordExplain;
+import dictation.word.entity.word.tables.WordExplain;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

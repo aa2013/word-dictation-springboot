@@ -34,15 +34,6 @@ public class AuthenticationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-//        for (String url : SecurityConfig.URL_LIST) {
-//            if (url.startsWith(request.getRequestURI())) {
-//                chain.doFilter(request, response);
-//                return;
-//            }
-//        }
-        System.out.println(request.getRequestURL());
-        System.out.println(request.getRequestURI());
-        System.out.println(request.getContextPath());
         UsernamePasswordAuthenticationToken authenticationToken = getAuthenticationToken(request);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         chain.doFilter(request, response);
