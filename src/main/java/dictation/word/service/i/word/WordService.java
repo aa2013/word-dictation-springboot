@@ -1,6 +1,7 @@
 package dictation.word.service.i.word;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
 import dictation.word.entity.word.WordInfo;
 import dictation.word.entity.word.tables.Word;
@@ -21,5 +22,5 @@ public interface WordService extends IService<Word> {
      */
     List<Integer> importSingle(ImportWord word);
 
-    List<WordInfo> getList(int libId, int pageNum, int pageSize);
+    PageInfo<WordInfo> getList(int libId, int pageNum, int pageSize);
 }

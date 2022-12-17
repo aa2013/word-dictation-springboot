@@ -2,6 +2,8 @@ package dictation.word.service.impl.word;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import dictation.word.dao.word.WordMapper;
 import dictation.word.entity.lib.tables.Lib;
 import dictation.word.entity.lib.tables.LibWord;
@@ -42,7 +44,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     WordMapper wordMapper;
 
     @Override
-    public List<WordInfo> getList(int libId, int pageNum, int pageSize) {
+    public PageInfo<WordInfo> getList(int libId, int pageNum, int pageSize) {
         final Lib lib = libService.getById(libId);
         if (lib == null) {
             throw new IllegalDataException("该库不存在！");
@@ -50,7 +52,9 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         if (!lib.getCommon() && lib.getCreator() != getCurrentUserId()) {
             throw new NoPermissionException("这不是你的私有库");
         }
-        return wordMapper.getWordInfo(libId);
+        PageHelper.startPage(pageNum, pageSize);
+        List<WordInfo> list = wordMapper.getWordInfo(libId);
+        return new PageInfo<>(list);
     }
 
     @Override

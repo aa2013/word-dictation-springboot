@@ -1,5 +1,6 @@
 package dictation.word.controller;
 
+import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
 import dictation.word.entity.word.WordInfo;
 import dictation.word.service.i.word.WordService;
@@ -26,7 +27,7 @@ public class WordController {
         return wordService.importSingle(word);
     }
     @GetMapping("/list")
-    public List<WordInfo> getList(int libId, int pageNum, int pageSize) {
+    public PageInfo<WordInfo> getList(int libId, int pageNum, int pageSize) {
         return wordService.getList(libId,pageNum,pageSize);
     }
 }
