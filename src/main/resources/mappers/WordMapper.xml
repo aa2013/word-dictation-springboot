@@ -25,5 +25,6 @@
                       on we.word_id = t.id
                  join lib
                       on lib.id = we.lib_id
+        group by word_id
     </select>
 </mapper>
