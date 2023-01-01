@@ -16,6 +16,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Word {
+    public static final String JINSAN = "https://www.iciba.com/word?w=";
     @TableId(type = IdType.AUTO)
     Integer id;
     @NotBlank

@@ -3,9 +3,11 @@ package dictation.word.service.i.word;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
+import dictation.word.entity.word.WordExplainInfo;
 import dictation.word.entity.word.WordInfo;
 import dictation.word.entity.word.tables.Word;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -20,7 +22,11 @@ public interface WordService extends IService<Word> {
      * @param word 待导入单词
      * @return id，第一个为单词id，后续为释义 id
      */
-    List<Integer> importSingle(ImportWord word);
+    List<Integer> importSingle(ImportWord word) throws IOException;
 
     PageInfo<WordInfo> getList(int libId, int pageNum, int pageSize);
+
+    String[] parseSymbols(String word) throws IOException;
+
+    PageInfo<WordExplainInfo> getOtherLibExplains(int wordId, int excludeLib, int pageNum, int pageSize);
 }

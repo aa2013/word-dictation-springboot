@@ -29,6 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      */
     public static final String[] URL_LIST = {
             "/user/key",
+            "/user/rsa",
     };
 
     @Override

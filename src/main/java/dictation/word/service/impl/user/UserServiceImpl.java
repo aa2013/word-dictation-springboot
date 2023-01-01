@@ -25,7 +25,10 @@ import java.util.List;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService, TokenService, UserDetailsService {
     @Override
     public User getUserByAccount(String account) {
-        return getOne(Wrappers.<User>lambdaQuery().eq(User::getAccount, account));
+        return getOne(Wrappers
+                .<User>lambdaQuery()
+                .eq(User::getAccount, account)
+        );
     }
 
 

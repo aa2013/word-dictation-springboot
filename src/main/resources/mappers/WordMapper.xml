@@ -2,29 +2,43 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="dictation.word.dao.word.WordMapper">
     <resultMap id="wordInfo" type="dictation.word.entity.word.WordInfo">
-        <result column="word_id" property="id"/>
+        <result column="id" property="id"/>
         <result column="word" property="word"/>
         <result column="us_symbol" property="usSymbol"/>
         <result column="en_symbol" property="enSymbol"/>
-        <collection property="explains" column="word_id" ofType="dictation.word.entity.word.WordExplainInfo">
+        <collection property="explains" column="{wordId=id,libId=lib_id}" ofType="dictation.word.entity.word.Explain"
+                    select="getWordExplainsByLib">
             <result property="explanation" column="explanation"/>
             <result property="type" column="type"/>
-            <result property="libName" column="lib_name"/>
         </collection>
     </resultMap>
 
     <select id="getWordInfo" resultMap="wordInfo">
-        select we.*, t.word, t.en_symbol, t.us_symbol, lib.lib_name
+        SELECT word.*,
+               lw.lib_id
+        FROM word
+                 JOIN lib_word AS lw ON lw.word_id = word.id
+            AND lw.lib_id = #{libId}
+    </select>
+    <select id="getWordExplainsByLib" resultType="dictation.word.entity.word.Explain">
+        select *
+        from word_explain
+        where lib_id = #{libId}
+          and word_id = #{wordId}
+    </select>
+    <select id="getOtherLibExplains" resultType="dictation.word.entity.word.WordExplainInfo">
+        select we.*, t.lib_name
         from word_explain as we
                  join (
-            select word.*, lw.lib_id
-            from word
-                     join lib_word as lw
-                          on lw.word_id = word.id and lw.lib_id = #{libId}
-        ) t
-                      on we.word_id = t.id
-                 join lib
-                      on lib.id = we.lib_id
-        group by word_id
+            select lib_id, lib_name
+            from lib_word as lw
+                     join lib
+                          on word_id = #{wordId} and lib.id = lib_id and common = true and lib_id!=#{exclude}
+        ) as t
+                      on we.lib_id = t.lib_id
+                          and word_id = #{wordId}
+
+
     </select>
+
 </mapper>
