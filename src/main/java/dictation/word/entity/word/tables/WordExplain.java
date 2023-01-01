@@ -19,10 +19,12 @@ public class WordExplain extends Explain {
     Integer id;
     Integer wordId;
     Integer libId;
+    Boolean isDefault = false;
 
-    public WordExplain(int wordId, int libId, Explain explain) {
+    public WordExplain(int wordId, int libId, Explain explain, boolean isDefault) {
         super(explain.getExplanation(), explain.getType());
         this.wordId = wordId;
         this.libId = libId;
+        this.isDefault = isDefault;
     }
 }

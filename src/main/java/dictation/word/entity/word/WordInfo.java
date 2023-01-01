@@ -15,5 +15,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WordInfo extends Word {
-    List<WordExplainInfo> explains;
+    List<Explain> explains;
 }

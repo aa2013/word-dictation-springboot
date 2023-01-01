@@ -3,10 +3,7 @@ package dictation.word.entity.word;
 import dictation.word.entity.word.tables.Word;
 import lombok.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author ljh
@@ -20,7 +17,4 @@ import java.util.List;
 public class ImportWord extends Word {
     @NotNull
     Integer libId;
-    @NotEmpty
-    @Valid
-    List<Explain> explains;
 }

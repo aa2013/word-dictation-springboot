@@ -21,4 +21,9 @@ public class UserController {
         builder.insert(17, "DF47W");
         return builder.toString();
     }
+
+    @GetMapping("/rsa")
+    public String getRsa(String key) {
+        return RSAUtil.encrypt(key);
+    }
 }
