@@ -16,11 +16,12 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Word {
-    public static final String JINSAN = "https://www.iciba.com/word?w=";
     @TableId(type = IdType.AUTO)
     Integer id;
     @NotBlank
     String word;
     String usSymbol;
     String enSymbol;
+    String usSymbolMp3;
+    String enSymbolMp3;
 }

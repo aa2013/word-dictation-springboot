@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
 import dictation.word.entity.word.WordExplainInfo;
 import dictation.word.entity.word.WordInfo;
+import dictation.word.exception.IllegalDataException;
 import dictation.word.service.i.word.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -34,7 +35,21 @@ public class WordController {
 
     @GetMapping("/list")
     public PageInfo<WordInfo> getList(int libId, int pageNum, int pageSize) {
-        return wordService.getList(libId, pageNum, pageSize);
+        return wordService.search(libId, null, pageNum, pageSize, false);
+    }
+
+    @GetMapping("/randomList")
+    public PageInfo<WordInfo> getRandomList(int libId, int size) {
+        PageInfo<WordInfo> search = wordService.search(libId, null, 1, size, true);
+        if (search.getList().size() != size) {
+            throw new IllegalDataException("数量不足");
+        }
+        return search;
+    }
+
+    @GetMapping("/search")
+    public PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize) {
+        return wordService.search(libId, word, pageNum, pageSize, false);
     }
 
     @GetMapping("/otherExplains")

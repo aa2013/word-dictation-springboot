@@ -1,5 +1,7 @@
 package dictation.word.service.impl.word;
 
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -21,9 +23,7 @@ import dictation.word.service.i.lib.LibWordService;
 import dictation.word.service.i.user.TokenService;
 import dictation.word.service.i.word.WordExplainService;
 import dictation.word.service.i.word.WordService;
-import dictation.word.utils.NetUtil;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import dictation.word.utils.TranslationUtil;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static dictation.word.entity.word.tables.Word.JINSAN;
+import java.util.*;
 
 /**
  * @author ljh
@@ -53,11 +49,13 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     WordMapper wordMapper;
 
     @Override
-    public String[] parseSymbols(String word) throws IOException {
-        String resp = NetUtil.get(JINSAN + word);
-        Document document = Jsoup.parse(resp);
-        Elements symbolUl = document.getElementsByClass("Mean_symbols__fpCmS");
-        return parseSymbols(symbolUl);
+    public Map<String, String> getCiBaSymbols(JSONObject data) {
+        Map<String, String> map = new HashMap<>();
+        map.put("us", data.getString("ph_am"));
+        map.put("en", data.getString("ph_en"));
+        map.put("us-mp3", data.getString("ph_am_mp3"));
+        map.put("en-mp3", data.getString("ph_en_mp3"));
+        return map;
     }
 
     public String[] parseSymbols(Elements es) {
@@ -80,7 +78,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     }
 
     @Override
-    public PageInfo<WordInfo> getList(int libId, int pageNum, int pageSize) {
+    public PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize,boolean random) {
         final Lib lib = libService.getById(libId);
         if (lib == null) {
             throw new IllegalDataException("该库不存在！");
@@ -89,9 +87,15 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             throw new NoPermissionException("这不是你的私有库");
         }
         PageHelper.startPage(pageNum, pageSize);
-        List<WordInfo> list = wordMapper.getWordInfo(libId);
+        List<WordInfo> list = null;
+        if (word == null || StringUtils.isBlank(word)) {
+            list = wordMapper.getWordInfo(libId, null,random);
+        } else {
+            list = wordMapper.getWordInfo(libId, word,random);
+        }
         return new PageInfo<>(list);
     }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -101,12 +105,15 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             throw new CreateNewException("给定词库不存在，导入失败！");
         }
         final Word one = getOne(Wrappers.<Word>lambdaQuery().eq(Word::getWord, word.getWord()));
+        JSONObject ciBa = TranslationUtil.getCiBa(word.getWord());
         if (one == null) {
             //总词库里面没有该单词
             //获取音标并插入
-            String[] symbols = parseSymbols(word.getWord());
-            word.setEnSymbol(symbols[0]);
-            word.setUsSymbol(symbols[1]);
+            Map<String, String> symbols = getCiBaSymbols(ciBa);
+            word.setEnSymbol(symbols.get("en"));
+            word.setUsSymbol(symbols.get("us"));
+            word.setEnSymbolMp3(symbols.get("en-mp3"));
+            word.setUsSymbolMp3(symbols.get("us-mp3"));
             if (!save(word)) {
                 throw new CreateNewException("导入失败！");
             }
@@ -123,7 +130,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
                 .eq(Lib::getId, lib.getId())
                 .set(Lib::getUpdateTime, new Date()));
         // 导入释义
-        List<Explain> explainList = explainService.getExplains(word.getWord());
+        List<Explain> explainList = explainService.getExplains(ciBa);
         List<WordExplain> explains = new ArrayList<>(explainList.size());
         boolean first = true;
         for (Explain explain : explainList) {

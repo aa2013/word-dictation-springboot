@@ -27,7 +27,8 @@ public enum ResultCode {
     CREATE_FAILED(1012, "新建失败！"),
     DEL_FAILED(1013, "删除失败！"),
     UPDATE_FAILED(1014, "更新失败！"),
-    ILLEGAL_DATA(1015, "取得的数据不合法");
+    ILLEGAL_DATA(1015, "取得的数据不合法"),
+    UNAVAILABLE(1016, "服务不可用，稍后再试");
     /**
      * 错误返回码
      */

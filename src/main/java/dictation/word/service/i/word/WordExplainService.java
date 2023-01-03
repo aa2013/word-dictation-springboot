@@ -1,10 +1,10 @@
 package dictation.word.service.i.word;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import dictation.word.entity.word.Explain;
 import dictation.word.entity.word.tables.WordExplain;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -12,5 +12,5 @@ import java.util.List;
  * @date 2022/12/14
  */
 public interface WordExplainService extends IService<WordExplain> {
-    List<Explain> getExplains(String word) throws IOException;
+    List<Explain> getExplains(JSONObject json);
 }

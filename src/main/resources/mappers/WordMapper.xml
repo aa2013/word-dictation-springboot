@@ -6,35 +6,42 @@
         <result column="word" property="word"/>
         <result column="us_symbol" property="usSymbol"/>
         <result column="en_symbol" property="enSymbol"/>
-        <collection property="explains" column="{wordId=id,libId=lib_id}" ofType="dictation.word.entity.word.Explain"
-                    select="getWordExplainsByLib">
+        <result column="en_symbol_mp3" property="enSymbolMp3"/>
+        <result column="us_symbol_mp3" property="usSymbolMp3"/>
+        <association property="explain" column="{wordId=id,libId=lib_id}"
+                     select="getDefaultWordExplainByLib">
             <result property="explanation" column="explanation"/>
             <result property="type" column="type"/>
-        </collection>
+        </association>
     </resultMap>
 
     <select id="getWordInfo" resultMap="wordInfo">
         SELECT word.*,
-               lw.lib_id
+        lw.lib_id
         FROM word
-                 JOIN lib_word AS lw ON lw.word_id = word.id
-            AND lw.lib_id = #{libId}
+        JOIN lib_word AS lw
+        ON lw.word_id = word.id AND lw.lib_id = #{libId}
+        <if test="word!=null and word!=''">
+            and word.word like concat('%',#{word},'%')
+        </if>
+        <if test="random==true">
+            order by rand()
+        </if>
     </select>
-    <select id="getWordExplainsByLib" resultType="dictation.word.entity.word.Explain">
+    <select id="getDefaultWordExplainByLib" resultType="dictation.word.entity.word.Explain">
         select *
         from word_explain
         where lib_id = #{libId}
           and word_id = #{wordId}
+          and is_default = 1
     </select>
     <select id="getOtherLibExplains" resultType="dictation.word.entity.word.WordExplainInfo">
         select we.*, t.lib_name
         from word_explain as we
-                 join (
-            select lib_id, lib_name
-            from lib_word as lw
-                     join lib
-                          on word_id = #{wordId} and lib.id = lib_id and common = true and lib_id!=#{exclude}
-        ) as t
+                 join (select lib_id, lib_name
+                       from lib_word as lw
+                                join lib
+                                     on word_id = #{wordId} and lib.id = lib_id and common = true and lib_id!=#{exclude}) as t
                       on we.lib_id = t.lib_id
                           and word_id = #{wordId}
 

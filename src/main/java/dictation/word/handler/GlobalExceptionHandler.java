@@ -119,6 +119,7 @@ public class GlobalExceptionHandler {
         log.error(ExceptionUtil.getMessage(e));
         return ErrorResult.fail(ResultCode.DEL_FAILED, e);
     }
+
     /**
      * 更新异常
      *
@@ -131,6 +132,7 @@ public class GlobalExceptionHandler {
         log.error(ExceptionUtil.getMessage(e));
         return ErrorResult.fail(ResultCode.UPDATE_FAILED, e);
     }
+
     /**
      * 数据不合法异常
      *
@@ -142,6 +144,18 @@ public class GlobalExceptionHandler {
     public ErrorResult illegalDataExceptionHandler(Exception e) {
         log.error(ExceptionUtil.getMessage(e));
         return ErrorResult.fail(ResultCode.ILLEGAL_DATA, e);
+    }
+    /**
+     * 服务不可用异常
+     *
+     * @param e exception
+     * @return 错误返回
+     */
+    @ExceptionHandler({UnavailableException.class})
+    @ResponseStatus(HttpStatus.OK)
+    public ErrorResult UnAvailableExceptionHandler(Exception e) {
+        log.error(ExceptionUtil.getMessage(e));
+        return ErrorResult.fail(ResultCode.UNAVAILABLE, e);
     }
 
 }
