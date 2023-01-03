@@ -28,12 +28,16 @@
             order by rand()
         </if>
     </select>
+    <!--    优先选择本库，否则选择公共库释义-->
     <select id="getDefaultWordExplainByLib" resultType="dictation.word.entity.word.Explain">
-        select *
-        from word_explain
-        where lib_id = #{libId}
-          and word_id = #{wordId}
-          and is_default = 1
+        select t.*
+        from (select *
+              from word_explain
+              where word_id = #{wordId}
+                and is_default = 1) as t
+                 join lib
+                      on lib.id = t.lib_id and (lib.id = #{libId} or common = 1)
+        limit 1
     </select>
     <select id="getOtherLibExplains" resultType="dictation.word.entity.word.WordExplainInfo">
         select we.*, t.lib_name
