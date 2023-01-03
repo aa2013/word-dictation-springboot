@@ -1,5 +1,6 @@
 package dictation.word.service.i.word;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
@@ -9,6 +10,7 @@ import dictation.word.entity.word.tables.Word;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ljh
@@ -24,9 +26,9 @@ public interface WordService extends IService<Word> {
      */
     List<Integer> importSingle(ImportWord word) throws IOException;
 
-    PageInfo<WordInfo> getList(int libId, int pageNum, int pageSize);
-
-    String[] parseSymbols(String word) throws IOException;
+    Map<String,String> getCiBaSymbols(JSONObject data);
 
     PageInfo<WordExplainInfo> getOtherLibExplains(int wordId, int excludeLib, int pageNum, int pageSize);
+
+    PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize,boolean random);
 }

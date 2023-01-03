@@ -3,8 +3,6 @@ package dictation.word.entity.word;
 import dictation.word.entity.word.tables.Word;
 import lombok.*;
 
-import java.util.List;
-
 /**
  * @author ljh
  * @date 2022/12/14
@@ -15,5 +13,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WordInfo extends Word {
-    List<Explain> explains;
+    Explain explain;
 }

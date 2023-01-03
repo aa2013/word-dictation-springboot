@@ -11,6 +11,7 @@ import java.io.IOException;
 public class NetUtil {
 
     public static String get(String getUrl) throws IOException {
+        getUrl = getUrl.replace(" ", "%20");
         // 创建一个可关闭的 HttpClient 实例
         CloseableHttpClient httpClient = HttpClients.createDefault();
         // 创建一个 HttpGet 请求
@@ -22,6 +23,7 @@ public class NetUtil {
         String content = EntityUtils.toString(response.getEntity());
         // 打印响应状态码和状态信息
         if (response.getStatusLine().getStatusCode() != 200) {
+            System.out.println(content);
             throw new RuntimeException("获取响应失败");
         }
         // 关闭响应
