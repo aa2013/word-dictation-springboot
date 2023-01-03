@@ -1,5 +1,6 @@
 package dictation.word.utils;
 
+import dictation.word.exception.UnavailableException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -23,8 +24,8 @@ public class NetUtil {
         String content = EntityUtils.toString(response.getEntity());
         // 打印响应状态码和状态信息
         if (response.getStatusLine().getStatusCode() != 200) {
-            System.out.println(content);
-            throw new RuntimeException("获取响应失败");
+            System.out.println("响应："+content);
+            throw new UnavailableException("被翻译api禁止，明天再试");
         }
         // 关闭响应
         response.close();

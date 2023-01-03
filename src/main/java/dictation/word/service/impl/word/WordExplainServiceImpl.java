@@ -11,6 +11,7 @@ import dictation.word.service.i.word.WordExplainService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,6 +33,8 @@ public class WordExplainServiceImpl extends ServiceImpl<WordExplainMapper, WordE
                 res.add(new Explain(means.getString(j), type));
             }
         }
+        // 以短释义优先
+        res.sort(Comparator.comparingInt(a -> a.getExplanation().length()));
         return res;
     }
 
