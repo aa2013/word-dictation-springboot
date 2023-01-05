@@ -11,21 +11,19 @@ import dictation.word.entity.lib.tables.Lib;
 import dictation.word.entity.lib.tables.LibWord;
 import dictation.word.entity.word.Explain;
 import dictation.word.entity.word.ImportWord;
-import dictation.word.entity.word.WordExplainInfo;
 import dictation.word.entity.word.WordInfo;
 import dictation.word.entity.word.tables.Word;
 import dictation.word.entity.word.tables.WordExplain;
 import dictation.word.exception.CreateNewException;
 import dictation.word.exception.IllegalDataException;
 import dictation.word.exception.NoPermissionException;
+import dictation.word.exception.UpdateException;
 import dictation.word.service.i.lib.LibService;
 import dictation.word.service.i.lib.LibWordService;
 import dictation.word.service.i.user.TokenService;
 import dictation.word.service.i.word.WordExplainService;
 import dictation.word.service.i.word.WordService;
 import dictation.word.utils.TranslationUtil;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +48,25 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     WordMapper wordMapper;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean changeDefaultExplains(int wordId, int defaultId) {
+        boolean update = explainService.update(Wrappers.<WordExplain>lambdaUpdate()
+                .eq(WordExplain::getWordId, wordId)
+                .set(WordExplain::getIsDefault, false));
+        if (!update) {
+            throw new UpdateException("更新默认释义失败！");
+        }
+        update = explainService.update(Wrappers.<WordExplain>lambdaUpdate()
+                .eq(WordExplain::getWordId, wordId)
+                .eq(WordExplain::getId, defaultId)
+                .set(WordExplain::getIsDefault, true));
+        if (!update) {
+            throw new UpdateException("更新默认释义失败！");
+        }
+        return true;
+    }
+
+    @Override
     public Map<String, String> getCiBaSymbols(JSONObject data) {
         Map<String, String> map = new HashMap<>();
         map.put("us", data.getString("ph_am"));
@@ -59,23 +76,10 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         return map;
     }
 
-    public String[] parseSymbols(Elements es) {
-        String[] symbols = new String[2];
-        Element parent = es.get(0);
-        Elements children = parent.children();
-        int i = 0;
-        for (Element e : children) {
-            String symbol = e.text().replaceAll("英|美", "");
-            symbols[i++] = symbol;
-        }
-        return symbols;
-    }
 
     @Override
-    public PageInfo<WordExplainInfo> getOtherLibExplains(int wordId, int excludeLib, int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        List<WordExplainInfo> list = wordMapper.getOtherLibExplains(wordId, excludeLib);
-        return new PageInfo<>(list);
+    public List<WordExplain> getWordExplains(int wordId, int libId) {
+        return wordMapper.getOtherLibExplains(wordId, libId);
     }
 
     @Override

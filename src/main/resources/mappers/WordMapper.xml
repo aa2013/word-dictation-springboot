@@ -39,15 +39,14 @@
                       on lib.id = t.lib_id and (lib.id = #{libId} or common = 1)
         limit 1
     </select>
-    <select id="getOtherLibExplains" resultType="dictation.word.entity.word.WordExplainInfo">
-        select we.*, t.lib_name
-        from word_explain as we
-                 join (select lib_id, lib_name
-                       from lib_word as lw
-                                join lib
-                                     on word_id = #{wordId} and lib.id = lib_id and common = true and lib_id!=#{exclude}) as t
-                      on we.lib_id = t.lib_id
-                          and word_id = #{wordId}
+    <select id="getOtherLibExplains" resultType="dictation.word.entity.word.tables.WordExplain">
+        select t.*
+        from (select *
+              from word_explain
+              where word_id = #{wordId}
+             )	as t
+                 join lib
+                      on lib.id = t.lib_id and lib.id = #{libId}
 
 
     </select>
