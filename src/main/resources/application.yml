@@ -11,7 +11,7 @@ spring:
   jackson:
     time-zone: Asia/Shanghai
 
-# myabtis-plus mapper文件位置
+# mybatis-plus mapper文件位置
 mybatis-plus:
   mapper-locations: classpath:mappers/*.xml
   configuration-properties:

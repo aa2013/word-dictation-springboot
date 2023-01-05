@@ -2,8 +2,8 @@ package dictation.word.controller;
 
 import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
-import dictation.word.entity.word.WordExplainInfo;
 import dictation.word.entity.word.WordInfo;
+import dictation.word.entity.word.tables.WordExplain;
 import dictation.word.exception.IllegalDataException;
 import dictation.word.service.i.word.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +52,13 @@ public class WordController {
         return wordService.search(libId, word, pageNum, pageSize, false);
     }
 
-    @GetMapping("/otherExplains")
-    public PageInfo<WordExplainInfo> getOtherLibExplains(int wordId, int libId, int pageNum, int pageSize) {
-        return wordService.getOtherLibExplains(wordId, libId, pageNum, pageSize);
+    @GetMapping("/explains")
+    public List<WordExplain> getOtherLibExplains(int wordId, int libId) {
+        return wordService.getWordExplains(wordId, libId);
+    }
+
+    @GetMapping("/changeDefaultExplain")
+    public boolean changeDefaultExplains(int wordId, int defaultId) {
+        return wordService.changeDefaultExplains(wordId, defaultId);
     }
 }

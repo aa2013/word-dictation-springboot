@@ -2,9 +2,9 @@ package dictation.word.dao.word;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import dictation.word.entity.word.Explain;
-import dictation.word.entity.word.WordExplainInfo;
 import dictation.word.entity.word.WordInfo;
 import dictation.word.entity.word.tables.Word;
+import dictation.word.entity.word.tables.WordExplain;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,5 +20,5 @@ public interface WordMapper extends BaseMapper<Word> {
 
     List<Explain> getDefaultWordExplainByLib(@Param("wordId") int wordId, @Param("libId") int libId);
 
-    List<WordExplainInfo> getOtherLibExplains(@Param("wordId") int wordId, @Param("exclude") int excludeLib);
+    List<WordExplain> getOtherLibExplains(@Param("wordId") int wordId, @Param("libId") int libId);
 }
