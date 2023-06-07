@@ -2,8 +2,8 @@ package dictation.word.controller;
 
 import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
+import dictation.word.entity.word.WordExplainInfo;
 import dictation.word.entity.word.WordInfo;
-import dictation.word.entity.word.tables.WordExplain;
 import dictation.word.exception.IllegalDataException;
 import dictation.word.service.i.word.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/word")
 @Validated
-public class WordController {
+public class WordController extends BaseController {
     @Autowired
     WordService wordService;
 
@@ -35,12 +35,12 @@ public class WordController {
 
     @GetMapping("/list")
     public PageInfo<WordInfo> getList(int libId, int pageNum, int pageSize) {
-        return wordService.search(libId, null, pageNum, pageSize, false);
+        return wordService.search(libId, null, pageNum, pageSize, false, getCurrentUserId());
     }
 
     @GetMapping("/randomList")
     public PageInfo<WordInfo> getRandomList(int libId, int size) {
-        PageInfo<WordInfo> search = wordService.search(libId, null, 1, size, true);
+        PageInfo<WordInfo> search = wordService.search(libId, null, 1, size, true, getCurrentUserId());
         if (search.getList().size() != size) {
             throw new IllegalDataException("数量不足");
         }
@@ -49,16 +49,16 @@ public class WordController {
 
     @GetMapping("/search")
     public PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize) {
-        return wordService.search(libId, word, pageNum, pageSize, false);
+        return wordService.search(libId, word, pageNum, pageSize, false, getCurrentUserId());
     }
 
     @GetMapping("/explains")
-    public List<WordExplain> getOtherLibExplains(int wordId, int libId) {
-        return wordService.getWordExplains(wordId, libId);
+    public List<WordExplainInfo> getOtherLibExplains(int wordId, int libId) {
+        return wordService.getWordExplains(wordId, libId, getCurrentUserId());
     }
 
     @GetMapping("/changeDefaultExplain")
-    public boolean changeDefaultExplains(int wordId, int defaultId) {
-        return wordService.changeDefaultExplains(wordId, defaultId);
+    public boolean changeDefaultExplains(int libId, int wordId, int defaultId) {
+        return wordService.changeDefaultExplains(libId,wordId, defaultId,getCurrentUserId());
     }
 }

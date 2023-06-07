@@ -13,4 +13,7 @@ import java.util.List;
  */
 public interface WordExplainService extends IService<WordExplain> {
     List<Explain> getExplains(JSONObject json);
+    WordExplain getDefaultExplain(int libId,int wordId,int userId);
+
+    boolean isCustomDefault(int libId, int wordId, Integer expId, int userId);
 }

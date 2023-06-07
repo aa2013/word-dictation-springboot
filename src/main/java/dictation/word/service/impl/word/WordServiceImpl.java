@@ -11,23 +11,26 @@ import dictation.word.entity.lib.tables.Lib;
 import dictation.word.entity.lib.tables.LibWord;
 import dictation.word.entity.word.Explain;
 import dictation.word.entity.word.ImportWord;
+import dictation.word.entity.word.WordExplainInfo;
 import dictation.word.entity.word.WordInfo;
 import dictation.word.entity.word.tables.Word;
 import dictation.word.entity.word.tables.WordExplain;
+import dictation.word.entity.word.tables.WordExplainCustom;
 import dictation.word.exception.CreateNewException;
 import dictation.word.exception.IllegalDataException;
 import dictation.word.exception.NoPermissionException;
 import dictation.word.exception.UpdateException;
 import dictation.word.service.i.lib.LibService;
 import dictation.word.service.i.lib.LibWordService;
-import dictation.word.service.i.user.TokenService;
+import dictation.word.service.i.lib.UserLibService;
+import dictation.word.service.i.word.WordExplainCustomService;
 import dictation.word.service.i.word.WordExplainService;
 import dictation.word.service.i.word.WordService;
 import dictation.word.utils.TranslationUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,19 +40,48 @@ import java.util.stream.Collectors;
  * @date 2022/12/14
  */
 @Service
-public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements WordService, TokenService {
-    @Autowired
+public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements WordService {
+    @Resource
     LibService libService;
-    @Autowired
+    @Resource
+    UserLibService userLibService;
+    @Resource
     LibWordService libWordService;
-    @Autowired
+    @Resource
     WordExplainService explainService;
-    @Autowired
+    @Resource
+    WordExplainCustomService explainCustomService;
+    @Resource
     WordMapper wordMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean changeDefaultExplains(int wordId, int defaultId) {
+    public boolean changeDefaultExplains(int libId, int wordId, int defaultId, int userId) {
+        Lib lib = libService.getById(libId);
+        if (lib.getCreator().equals(userId)) {
+            //是创建者
+            return changeLibDefaultExplain(libId, wordId, defaultId);
+        }
+        return changeLibCustomDefaultExplain(libId, wordId, defaultId, userId);
+    }
+
+    private boolean changeLibCustomDefaultExplain(int libId, int wordId, int defaultId, int userId) {
+        WordExplainCustom custom = explainCustomService.getOne(Wrappers.<WordExplainCustom>lambdaQuery()
+                .eq(WordExplainCustom::getUserId, userId)
+                .eq(WordExplainCustom::getWordId, wordId)
+                .eq(WordExplainCustom::getLibId, libId));
+        if (custom == null) {
+            return explainCustomService.save(new WordExplainCustom(userId, wordId, libId, defaultId));
+        } else {
+            return explainCustomService.update(Wrappers.<WordExplainCustom>lambdaUpdate()
+                    .eq(WordExplainCustom::getUserId, userId)
+                    .eq(WordExplainCustom::getWordId, wordId)
+                    .eq(WordExplainCustom::getLibId, libId)
+                    .set(WordExplainCustom::getExpId, defaultId));
+        }
+    }
+
+    private boolean changeLibDefaultExplain(int libId, int wordId, int defaultId) {
         boolean update = explainService.update(Wrappers.<WordExplain>lambdaUpdate()
                 .eq(WordExplain::getWordId, wordId)
                 .set(WordExplain::getIsDefault, false));
@@ -63,6 +95,9 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         if (!update) {
             throw new UpdateException("更新默认释义失败！");
         }
+        libService.update(Wrappers.<Lib>lambdaUpdate()
+                .eq(Lib::getId, libId)
+                .set(Lib::getUpdateTime, new Date()));
         return true;
     }
 
@@ -78,18 +113,26 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
 
 
     @Override
-    public List<WordExplain> getWordExplains(int wordId, int libId) {
-        return wordMapper.getOtherLibExplains(wordId, libId);
+    public List<WordExplainInfo> getWordExplains(int wordId, int libId, int userId) {
+        List<WordExplain> explains = wordMapper.getOtherLibExplains(wordId, libId);
+        List<WordExplainInfo> res = new ArrayList<>(explains.size());
+        WordExplain defaultExplain = explainService.getDefaultExplain(libId, wordId, userId);
+        boolean defaultIsCustom = explainService.isCustomDefault(libId, wordId, defaultExplain.getId(), userId);
+        explains.forEach(explain -> {
+            boolean customDefault = explain.equals(defaultExplain) && defaultIsCustom;
+            res.add(new WordExplainInfo(explain, customDefault));
+        });
+        return res;
     }
 
     @Override
-    public PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize, boolean random) {
+    public PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize, boolean random, int userId) {
         final Lib lib = libService.getById(libId);
         if (lib == null) {
             throw new IllegalDataException("该库不存在！");
         }
-        if (!lib.getCommon() && lib.getCreator() != getCurrentUserId()) {
-            throw new NoPermissionException("这不是你的私有库");
+        if (userLibService.hasLib(userId, libId)) {
+            throw new NoPermissionException("你没有此库的访问权");
         }
         PageHelper.startPage(pageNum, pageSize);
         List<WordInfo> list = null;
@@ -98,6 +141,9 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         } else {
             list = wordMapper.getWordInfo(libId, word, random);
         }
+        list.forEach(wordInfo -> {
+            wordInfo.setExplain(explainService.getDefaultExplain(libId, wordInfo.getId(), userId));
+        });
         return new PageInfo<>(list);
     }
 
@@ -172,6 +218,11 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         libService.update(Wrappers.<Lib>lambdaUpdate()
                 .eq(Lib::getId, lib.getId())
                 .set(Lib::getUpdateTime, new Date()));
+        if (!ids.isEmpty()) {
+            libService.update(Wrappers.<Lib>lambdaUpdate()
+                    .eq(Lib::getId, lib.getId())
+                    .set(Lib::getUpdateTime, new Date()));
+        }
         return ids;
     }
 }

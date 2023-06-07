@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import dictation.word.dao.user.UserMapper;
 import dictation.word.entity.user.User;
 import dictation.word.entity.user.UserDetail;
-import dictation.word.service.i.user.TokenService;
 import dictation.word.service.i.user.UserService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -22,7 +21,7 @@ import java.util.List;
  * @date 2022/12/14
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService, TokenService, UserDetailsService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService, UserDetailsService {
     @Override
     public User getUserByAccount(String account) {
         return getOne(Wrappers

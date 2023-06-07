@@ -23,7 +23,6 @@ public class UnAuthEntryPoint implements AuthenticationEntryPoint {
         httpServletResponse.setContentType("application/json;charset=UTF-8");
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         ServletOutputStream outputStream = httpServletResponse.getOutputStream();
-        System.out.println(e.getMessage());
         outputStream.write(JSONUtil.toJsonStr(ResultBean.fail(ResultCode.NO_AUTH)).getBytes(StandardCharsets.UTF_8));
         outputStream.flush();
         outputStream.close();

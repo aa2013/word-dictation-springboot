@@ -8,11 +8,11 @@
         <result column="en_symbol" property="enSymbol"/>
         <result column="en_symbol_mp3" property="enSymbolMp3"/>
         <result column="us_symbol_mp3" property="usSymbolMp3"/>
-        <association property="explain" column="{wordId=id,libId=lib_id}"
-                     select="getDefaultWordExplainByLib">
-            <result property="explanation" column="explanation"/>
-            <result property="type" column="type"/>
-        </association>
+<!--        <association property="explain" column="{wordId=id,libId=lib_id}"-->
+<!--                     select="getDefaultWordExplainByLib">-->
+<!--            <result property="explanation" column="explanation"/>-->
+<!--            <result property="type" column="type"/>-->
+<!--        </association>-->
     </resultMap>
 
     <select id="getWordInfo" resultMap="wordInfo">
