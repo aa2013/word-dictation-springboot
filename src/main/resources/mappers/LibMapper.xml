@@ -9,25 +9,21 @@
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="common" column="common"/>
+        <result property="desc" column="desc"/>
+        <result property="cover" column="cover"/>
         <association property="cnt" column="id" javaType="int"
                      select="dictation.word.dao.lib.LibWordMapper.getLibWordCnt"/>
         <association property="uses" column="id" javaType="int"
                      select="dictation.word.dao.lib.UserLibMapper.getLibUseCnt"/>
     </resultMap>
     <select id="getUserLibList" resultMap="libInfo">
-        SELECT lib.id,
-               lib.lib_name,
-               lib.common,
-               u.user_name AS creatorName,
-               lib.creator,
-               create_time,
-               update_time
+        SELECT lib.*, u.user_name AS creatorName
         FROM lib
                  JOIN user_lib ON user_lib.lib_id = lib.id
                  JOIN USER AS u ON user_lib.user_id = u.id and u.id = #{userId}
     </select>
     <select id="getCommonLibList" resultMap="libInfo">
-        select lib.id, lib.lib_name, lib.common, u.user_name as creatorName, lib.creator, create_time, update_time
+        select lib.*, u.user_name as creatorName
         from lib
                  join user as u
                       on u.id = creator

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import dictation.word.config.QiNiuStorage;
 import dictation.word.dao.lib.LibMapper;
 import dictation.word.entity.lib.CommonLibInfo;
 import dictation.word.entity.lib.LibInfo;
@@ -13,6 +14,7 @@ import dictation.word.exception.CreateNewException;
 import dictation.word.service.i.lib.LibService;
 import dictation.word.service.i.lib.UserLibService;
 import dictation.word.utils.PageHelperUtil;
+import dictation.word.utils.RegexUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,8 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
     LibMapper libMapper;
     @Resource
     UserLibService userLibService;
+    @Resource
+    QiNiuStorage qiNiuStorage;
 
     @Override
     public PageInfo<CommonLibInfo> getListCommon(int pageNum, int pageSize, int userId) {
@@ -51,19 +55,35 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
     }
 
     @Override
-    public PageInfo<LibInfo> getListSelf(int pageNum, int pageSize, int userId) {
-        PageHelper.startPage(pageNum, pageSize);
-        return new PageInfo<>(libMapper.getUserLibList(userId));
+    public List<LibInfo> getListSelf(int userId) {
+        return libMapper.getUserLibList(userId);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int createLib(Lib lib, int userId) {
+    public boolean createLib(Lib lib, int userId) {
+        String b64Cover = lib.getCover();
+        lib.setCover(null);
         lib.setCreator(userId);
         lib.setCreateTime(new Date());
-        if (!save(lib) || !userLibService.save(new UserLib(userId, lib.getId()))) {
+        lib.setUpdateTime(new Date());
+        if (!save(lib)) {
             throw new CreateNewException("新增库失败");
         }
-        return lib.getId();
+        Integer libId = lib.getId();
+        if (!userLibService.save(new UserLib(userId, libId))) {
+            throw new CreateNewException("新增库失败");
+        }
+        if (!RegexUtil.isBase64(b64Cover)) {
+            return true;
+        }
+        String url = qiNiuStorage.uploadByBase64("wordDictation/cover" + libId + ".jpg", b64Cover);
+        if (url == null) {
+            System.err.println("图片上传失败！");
+            return true;
+        }
+        lib.setCover(url);
+        updateById(lib);
+        return true;
     }
 }
