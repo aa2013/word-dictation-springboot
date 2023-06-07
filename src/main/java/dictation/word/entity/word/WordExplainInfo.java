@@ -1,5 +1,6 @@
 package dictation.word.entity.word;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import dictation.word.entity.word.tables.WordExplain;
 import lombok.*;
 
@@ -7,11 +8,11 @@ import lombok.*;
  * @author ljh
  * @date 2022/12/14
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-@ToString(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class WordExplainInfo extends WordExplain {
-    String libName;
+public class WordExplainInfo {
+    @JsonUnwrapped
+    WordExplain explain;
+    boolean customDefault = false;
 }

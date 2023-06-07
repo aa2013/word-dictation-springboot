@@ -18,7 +18,8 @@ import java.util.Date;
 public class LibInfo {
     Integer id;
     String libName;
-    String creator;
+    String creatorName;
+    Integer creator;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date createTime;
@@ -26,4 +27,8 @@ public class LibInfo {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     Date updateTime;
     Boolean common = false;
+    //使用人数
+    int uses = 0;
+    //单词数
+    int cnt = 0;
 }

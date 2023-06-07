@@ -1,11 +1,13 @@
 # 应用服务 WEB 访问端口
 server:
-  port: 8092
+  port: 8099
 spring:
+  main:
+    allow-circular-references: true
   datasource:
-    url: jdbc:mysql://coclyun.top:3336/word_test?useUnicode=true&serverTimezone=Asia/Shanghai&useSSL=false&characterEncoding=utf-8&noAccessToProcedureBodies=true&allowMultiQueries=true
-    username: word_test
-    password: 123456
+    url: jdbc:mysql://localhost:3306/word_dictation?useUnicode=true&serverTimezone=Asia/Shanghai&useSSL=false&characterEncoding=utf-8&noAccessToProcedureBodies=true&allowMultiQueries=true
+    username: root
+    password:
   redis:
     host: localhost
     password:

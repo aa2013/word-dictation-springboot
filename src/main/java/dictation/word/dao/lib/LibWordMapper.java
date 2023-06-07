@@ -3,6 +3,7 @@ package dictation.word.dao.lib;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import dictation.word.entity.lib.tables.LibWord;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author ljh
@@ -10,4 +11,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface LibWordMapper extends BaseMapper<LibWord> {
+    int getLibWordCnt(@Param("libId") int libId);
 }

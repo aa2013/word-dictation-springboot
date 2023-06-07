@@ -1,24 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="dictation.word.dao.lib.LibMapper">
-
-    <select id="getLibList" resultType="dictation.word.entity.lib.LibInfo">
-        select lib.id, lib.lib_name, lib.common, u.user_name as creator,create_time,update_time
+    <resultMap id="libInfo" type="dictation.word.entity.lib.LibInfo">
+        <id property="id" column="id"/>
+        <result property="libName" column="lib_name"/>
+        <result property="creatorName" column="creatorName"/>
+        <result property="creator" column="creator"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="common" column="common"/>
+        <association property="cnt" column="id" javaType="int"
+                     select="dictation.word.dao.lib.LibWordMapper.getLibWordCnt"/>
+        <association property="uses" column="id" javaType="int"
+                     select="dictation.word.dao.lib.UserLibMapper.getLibUseCnt"/>
+    </resultMap>
+    <select id="getUserLibList" resultMap="libInfo">
+        SELECT lib.id,
+               lib.lib_name,
+               lib.common,
+               u.user_name AS creatorName,
+               lib.creator,
+               create_time,
+               update_time
+        FROM lib
+                 JOIN user_lib ON user_lib.lib_id = lib.id
+                 JOIN USER AS u ON user_lib.user_id = u.id and u.id = #{userId}
+    </select>
+    <select id="getCommonLibList" resultMap="libInfo">
+        select lib.id, lib.lib_name, lib.common, u.user_name as creatorName, lib.creator, create_time, update_time
         from lib
-        join user as u
-        on (u.id = creator
-        <if test="userId!=null">
-            and creator = #{userId}
-        </if>
-        )
-        <choose>
-            <when test="userId!=null">
-                or
-            </when>
-            <otherwise>
-                and
-            </otherwise>
-        </choose>
-        common = 1
+                 join user as u
+                      on u.id = creator
+                          and common = 1
     </select>
 </mapper>

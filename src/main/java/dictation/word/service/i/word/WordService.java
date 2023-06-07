@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
+import dictation.word.entity.word.WordExplainInfo;
 import dictation.word.entity.word.WordInfo;
 import dictation.word.entity.word.tables.Word;
-import dictation.word.entity.word.tables.WordExplain;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,11 +26,11 @@ public interface WordService extends IService<Word> {
      */
     List<Integer> importSingle(ImportWord word) throws IOException;
 
-    Map<String,String> getCiBaSymbols(JSONObject data);
+    Map<String, String> getCiBaSymbols(JSONObject data);
 
-    List<WordExplain> getWordExplains(int wordId, int libId);
+    List<WordExplainInfo> getWordExplains(int wordId, int libId, int userId);
 
-    PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize,boolean random);
+    PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize, boolean random, int userId);
 
-    boolean changeDefaultExplains(int wordId, int defaultId);
+    boolean changeDefaultExplains(int libId, int wordId, int defaultId, int userId);
 }

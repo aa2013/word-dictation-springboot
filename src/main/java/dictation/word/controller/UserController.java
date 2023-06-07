@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 @Validated
-public class UserController {
+public class UserController extends BaseController{
     @GetMapping("/key")
     public String getPublicKey() {
         //获取前端登录用于加密的key

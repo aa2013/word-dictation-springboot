@@ -2,6 +2,7 @@ package dictation.word.service.i.lib;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
+import dictation.word.entity.lib.CommonLibInfo;
 import dictation.word.entity.lib.LibInfo;
 import dictation.word.entity.lib.tables.Lib;
 
@@ -10,9 +11,10 @@ import dictation.word.entity.lib.tables.Lib;
  * @date 2022/12/14
  */
 public interface LibService extends IService<Lib> {
-    int addLib(Lib lib);
+    int createLib(Lib lib, int userId);
 
-    PageInfo<LibInfo> getListSelf(int pageNum, int pageSize);
+    PageInfo<LibInfo> getListSelf(int pageNum, int pageSize, int userId);
 
-    PageInfo<LibInfo> getListCommon(int pageNum, int pageSize);
+    PageInfo<CommonLibInfo> getListCommon(int pageNum, int pageSize, int userId);
+
 }
