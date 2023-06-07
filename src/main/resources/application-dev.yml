@@ -15,3 +15,9 @@ spring:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+qiniu:
+  accessKey: dG_7CKyJ7toEglclU_JFWcfwofkqMi6QyRIpQ0b1
+  secretKey: BLYmxcqrGltqf8tK9pfxCHWTCwg7OiEyESFHKVBT
+  bucketName: pic-common
+  domain: img.coclyun.top

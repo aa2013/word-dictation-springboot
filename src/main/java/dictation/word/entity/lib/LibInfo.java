@@ -18,6 +18,8 @@ import java.util.Date;
 public class LibInfo {
     Integer id;
     String libName;
+    String desc = "";
+    String cover;
     String creatorName;
     Integer creator;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -44,4 +44,42 @@ public class RegexUtil {
         Matcher m = p.matcher(email);
         return m.matches();
     }
+
+    /**
+     * 判断是否为数字字母组合
+     *
+     * @param s 字符串
+     * @return true为邮箱
+     */
+    public static boolean isNumberAndChar(String s) {
+        if (s == null) {
+            return false;
+        }
+        String regex = "^[A-Za-z0-9]+$";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(s);
+        return m.matches();
+    }
+
+    /**
+     * 判断是否为 base64,支持前缀
+     *
+     * @param s 字符串
+     * @return true为 base64
+     */
+    public static boolean isBase64(String s) {
+        String base64Pattern = "^(data:[^;]+;base64,)?([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
+        return Pattern.matches(base64Pattern, s);
+    }
+
+    /**
+     * 判断是否为 http(s) url
+     *
+     * @param s 字符串
+     * @return true 为 url
+     */
+    public static boolean isUrl(String s) {
+        String urlPattern = "^https?://[^\\s/$.?#].[^\\s]*$";
+        return Pattern.matches(urlPattern, s);
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author ljh
@@ -26,7 +27,7 @@ public class LibController extends BaseController {
     UserLibService userLibService;
 
     @PostMapping("/create")
-    public int createLib(@Valid Lib lib) {
+    public boolean createLib(@Valid @RequestBody Lib lib) {
         return libService.createLib(lib, getCurrentUserId());
     }
 
@@ -41,8 +42,8 @@ public class LibController extends BaseController {
     }
 
     @GetMapping("/list/self")
-    public PageInfo<LibInfo> listSelf(int pageNum, int pageSize) {
-        return libService.getListSelf(pageNum, pageSize, getCurrentUserId());
+    public List<LibInfo> listSelf() {
+        return libService.getListSelf(getCurrentUserId());
     }
 
     @GetMapping("/list/common")

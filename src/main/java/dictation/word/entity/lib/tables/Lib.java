@@ -1,6 +1,7 @@
 package dictation.word.entity.lib.tables;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,10 @@ public class Lib {
     Integer id;
     @NotBlank
     String libName;
+    @NotBlank
+    @TableField("`desc`")
+    String desc;
+    String cover;
     Integer creator;
     @NotNull
     Boolean common = false;
