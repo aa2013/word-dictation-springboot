@@ -28,7 +28,7 @@ public class UserLibServiceImpl extends ServiceImpl<UserLibMapper, UserLib> impl
     public boolean hasLib(int userId, int libId) {
         return count(Wrappers.<UserLib>lambdaQuery()
                 .eq(UserLib::getUserId, userId)
-                .eq(UserLib::getLibId, libId)) != 1;
+                .eq(UserLib::getLibId, libId)) == 1;
     }
 
     @Override

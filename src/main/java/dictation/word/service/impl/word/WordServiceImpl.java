@@ -9,10 +9,7 @@ import com.github.pagehelper.PageInfo;
 import dictation.word.dao.word.WordMapper;
 import dictation.word.entity.lib.tables.Lib;
 import dictation.word.entity.lib.tables.LibWord;
-import dictation.word.entity.word.Explain;
-import dictation.word.entity.word.ImportWord;
-import dictation.word.entity.word.WordExplainInfo;
-import dictation.word.entity.word.WordInfo;
+import dictation.word.entity.word.*;
 import dictation.word.entity.word.tables.Word;
 import dictation.word.entity.word.tables.WordExplain;
 import dictation.word.entity.word.tables.WordExplainCustom;
@@ -26,7 +23,6 @@ import dictation.word.service.i.lib.UserLibService;
 import dictation.word.service.i.word.WordExplainCustomService;
 import dictation.word.service.i.word.WordExplainService;
 import dictation.word.service.i.word.WordService;
-import dictation.word.utils.TranslationUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -131,7 +127,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         if (lib == null) {
             throw new IllegalDataException("该库不存在！");
         }
-        if (userLibService.hasLib(userId, libId)) {
+        if (!userLibService.hasLib(userId, libId)) {
             throw new NoPermissionException("你没有此库的访问权");
         }
         PageHelper.startPage(pageNum, pageSize);
@@ -158,16 +154,14 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         final Word one = getOne(Wrappers.<Word>lambdaQuery().eq(Word::getWord, word.getWord()));
         List<Integer> ids = new ArrayList<>();
         boolean insertExplain = false;
-        JSONObject ciBa = null;
+        TranslationResult translation = TranslationResult.translate(word.getWord());
         //总词库里面没有该单词
         if (one == null) {
-            ciBa = TranslationUtil.getCiBa(word.getWord());
             //获取音标并插入
-            Map<String, String> symbols = getCiBaSymbols(ciBa);
-            word.setEnSymbol(symbols.get("en"));
-            word.setUsSymbol(symbols.get("us"));
-            word.setEnSymbolMp3(symbols.get("en-mp3"));
-            word.setUsSymbolMp3(symbols.get("us-mp3"));
+            word.setEnSymbol(translation.getEnSymbol());
+            word.setUsSymbol(translation.getUsSymbol());
+            word.setEnSymbolMp3(translation.getEnMp3());
+            word.setUsSymbolMp3(translation.getUsMp3());
             if (!save(word)) {
                 throw new CreateNewException("导入失败！");
             }
@@ -193,11 +187,8 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             }
         }
         if (insertExplain) {
-            if (ciBa == null) {
-                ciBa = TranslationUtil.getCiBa(word.getWord());
-            }
             // 导入释义
-            List<Explain> explainList = explainService.getExplains(ciBa);
+            List<Explain> explainList = translation.getExplains();
             List<WordExplain> explains = new ArrayList<>(explainList.size());
             boolean first = true;
             for (Explain explain : explainList) {
