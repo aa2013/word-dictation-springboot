@@ -33,4 +33,5 @@ public class LibInfo {
     int uses = 0;
     //单词数
     int cnt = 0;
+    boolean self;
 }

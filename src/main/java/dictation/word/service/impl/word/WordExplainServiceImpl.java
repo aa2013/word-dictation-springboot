@@ -50,21 +50,5 @@ public class WordExplainServiceImpl extends ServiceImpl<WordExplainMapper, WordE
                 .eq(WordExplain::getWordId, wordId));
     }
 
-    @Override
-    public List<Explain> getExplains(JSONObject json) {
-        List<Explain> res = new ArrayList<>();
-        JSONArray parts = json.getJSONArray("parts");
-        for (int i = 0; i < parts.size(); i++) {
-            JSONObject part = parts.getJSONObject(i);
-            String type = part.getString("part");
-            JSONArray means = part.getJSONArray("means");
-            for (int j = 0; j < means.size(); j++) {
-                res.add(new Explain(means.getString(j), type));
-            }
-        }
-        // 以短释义优先
-        res.sort(Comparator.comparingInt(a -> a.getExplanation().length()));
-        return res;
-    }
 
 }

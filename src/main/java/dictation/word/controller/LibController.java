@@ -45,6 +45,10 @@ public class LibController extends BaseController {
     public List<LibInfo> listSelf() {
         return libService.getListSelf(getCurrentUserId());
     }
+    @GetMapping("/info/{libId}")
+    public LibInfo getLibInfo(@PathVariable int libId) {
+        return libService.getLibInfo(libId,getCurrentUserId());
+    }
 
     @GetMapping("/list/common")
     public PageInfo<CommonLibInfo> listCommon(int pageNum, int pageSize) {

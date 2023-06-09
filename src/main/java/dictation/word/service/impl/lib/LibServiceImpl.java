@@ -38,6 +38,11 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
     QiNiuStorage qiNiuStorage;
 
     @Override
+    public LibInfo getLibInfo(int libId, int userId) {
+        return null;
+    }
+
+    @Override
     public PageInfo<CommonLibInfo> getListCommon(int pageNum, int pageSize, int userId) {
         PageHelper.startPage(pageNum, pageSize);
         List<LibInfo> commonLibList = libMapper.getCommonLibList();
@@ -56,7 +61,11 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
 
     @Override
     public List<LibInfo> getListSelf(int userId) {
-        return libMapper.getUserLibList(userId);
+        List<LibInfo> userLibList = libMapper.getUserLibList(userId);
+        userLibList.forEach(lib -> {
+            lib.setSelf(lib.getCreator().equals(userId));
+        });
+        return userLibList;
     }
 
     @Override
