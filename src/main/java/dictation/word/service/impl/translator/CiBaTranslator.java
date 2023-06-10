@@ -9,17 +9,27 @@ import dictation.word.utils.NetUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 public class CiBaTranslator extends AbstractTranslator<JSONObject> {
+    private boolean notFound = false;
+
+    @Override
+    protected boolean isNotFound() {
+        return this.notFound;
+    }
+
     @Override
     public void translate(String word) {
         try {
             String resp = NetUtil.get("https://www.iciba.com/word?w=" + word);
             Document document = Jsoup.parse(resp);
+            Elements wordDiv = document.getElementsByClass("Mean_word__hwr_g");
+            this.notFound = wordDiv.isEmpty();
             Element element = document.getElementById("__NEXT_DATA__");
             assert element != null;
             JSONObject json = JSONObject.parseObject(element.html());

@@ -1,6 +1,5 @@
 package dictation.word.service.impl.word;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -95,16 +96,6 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
                 .eq(Lib::getId, libId)
                 .set(Lib::getUpdateTime, new Date()));
         return true;
-    }
-
-    @Override
-    public Map<String, String> getCiBaSymbols(JSONObject data) {
-        Map<String, String> map = new HashMap<>();
-        map.put("us", data.getString("ph_am"));
-        map.put("en", data.getString("ph_en"));
-        map.put("us-mp3", data.getString("ph_am_mp3"));
-        map.put("en-mp3", data.getString("ph_en_mp3"));
-        return map;
     }
 
 

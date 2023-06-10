@@ -14,6 +14,13 @@ import org.jsoup.select.Elements;
 import java.util.*;
 
 public class SouGouTranslator extends AbstractTranslator<JSONObject> {
+    private boolean notFound = false;
+
+    @Override
+    protected boolean isNotFound() {
+        return this.notFound;
+    }
+
     @Override
     public void translate(String word) {
         try {

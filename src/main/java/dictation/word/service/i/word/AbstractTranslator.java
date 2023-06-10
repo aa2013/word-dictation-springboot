@@ -10,20 +10,20 @@ public abstract class AbstractTranslator<T> {
      * 存储解析得到的源数据，有可能是 json，有可能是 html 的 document
      */
     protected T data = null;
-    /**
-     * 标记是否无翻译结果
-     */
-    protected boolean notFound = false;
 
     private void checkValid() {
-        if (this.data == null || notFound) {
+        if (this.data == null || this.isNotFound()) {
             throw new IllegalDataException("未获取翻译结果或获取失败");
         }
     }
 
+    /**
+     * 标记是否无翻译结果
+     */
+    protected abstract boolean isNotFound();
+
     public void clear() {
         this.data = null;
-        this.notFound = false;
     }
 
     public abstract void translate(String word);

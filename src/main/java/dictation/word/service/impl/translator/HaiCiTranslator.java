@@ -15,13 +15,16 @@ import java.util.List;
 
 public class HaiCiTranslator extends AbstractTranslator<Document> {
     @Override
+    protected boolean isNotFound() {
+        Elements notFind = this.data.getElementsByClass("ifufind");
+        return notFind.size() > 0;
+    }
+
+    @Override
     public void translate(String word) {
         try {
             String resp = NetUtil.get("https://dict.cn/search?q=" + word);
-            Document document = Jsoup.parse(resp);
-            this.data = document;
-            Elements notFind = document.getElementsByClass("ifufind");
-            notFound = notFind.size() > 0;
+            this.data = Jsoup.parse(resp);
         } catch (Exception e) {
             e.printStackTrace();
             throw new UnavailableException("解析Html错误");

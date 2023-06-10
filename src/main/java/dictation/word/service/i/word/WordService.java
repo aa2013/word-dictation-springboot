@@ -26,8 +26,6 @@ public interface WordService extends IService<Word> {
      */
     List<Integer> importSingle(ImportWord word) throws IOException;
 
-    Map<String, String> getCiBaSymbols(JSONObject data);
-
     List<WordExplainInfo> getWordExplains(int wordId, int libId, int userId);
 
     PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize, boolean random, int userId);
