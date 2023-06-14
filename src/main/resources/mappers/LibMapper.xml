@@ -22,6 +22,11 @@
                  JOIN user_lib ON user_lib.lib_id = lib.id
                  JOIN USER AS u ON user_lib.user_id = u.id and u.id = #{userId}
     </select>
+    <select id="getLibInfo" resultMap="libInfo">
+        SELECT lib.*, u.user_name AS creatorName
+        FROM lib
+                 JOIN USER AS u ON lib.id = #{libId} and u.id = #{userId}
+    </select>
     <select id="getCommonLibList" resultMap="libInfo">
         select lib.*, u.user_name as creatorName
         from lib

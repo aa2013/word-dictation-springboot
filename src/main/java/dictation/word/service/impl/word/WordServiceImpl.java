@@ -63,38 +63,24 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     }
 
     private boolean changeLibCustomDefaultExplain(int libId, int wordId, int defaultId, int userId) {
-        WordExplainCustom custom = explainCustomService.getOne(Wrappers.<WordExplainCustom>lambdaQuery()
-                .eq(WordExplainCustom::getUserId, userId)
-                .eq(WordExplainCustom::getWordId, wordId)
-                .eq(WordExplainCustom::getLibId, libId));
+        WordExplainCustom custom = explainCustomService.getOne(Wrappers.<WordExplainCustom>lambdaQuery().eq(WordExplainCustom::getUserId, userId).eq(WordExplainCustom::getWordId, wordId).eq(WordExplainCustom::getLibId, libId));
         if (custom == null) {
             return explainCustomService.save(new WordExplainCustom(userId, wordId, libId, defaultId));
         } else {
-            return explainCustomService.update(Wrappers.<WordExplainCustom>lambdaUpdate()
-                    .eq(WordExplainCustom::getUserId, userId)
-                    .eq(WordExplainCustom::getWordId, wordId)
-                    .eq(WordExplainCustom::getLibId, libId)
-                    .set(WordExplainCustom::getExpId, defaultId));
+            return explainCustomService.update(Wrappers.<WordExplainCustom>lambdaUpdate().eq(WordExplainCustom::getUserId, userId).eq(WordExplainCustom::getWordId, wordId).eq(WordExplainCustom::getLibId, libId).set(WordExplainCustom::getExpId, defaultId));
         }
     }
 
     private boolean changeLibDefaultExplain(int libId, int wordId, int defaultId) {
-        boolean update = explainService.update(Wrappers.<WordExplain>lambdaUpdate()
-                .eq(WordExplain::getWordId, wordId)
-                .set(WordExplain::getIsDefault, false));
+        boolean update = explainService.update(Wrappers.<WordExplain>lambdaUpdate().eq(WordExplain::getWordId, wordId).set(WordExplain::getIsDefault, false));
         if (!update) {
             throw new UpdateException("更新默认释义失败！");
         }
-        update = explainService.update(Wrappers.<WordExplain>lambdaUpdate()
-                .eq(WordExplain::getWordId, wordId)
-                .eq(WordExplain::getId, defaultId)
-                .set(WordExplain::getIsDefault, true));
+        update = explainService.update(Wrappers.<WordExplain>lambdaUpdate().eq(WordExplain::getWordId, wordId).eq(WordExplain::getId, defaultId).set(WordExplain::getIsDefault, true));
         if (!update) {
             throw new UpdateException("更新默认释义失败！");
         }
-        libService.update(Wrappers.<Lib>lambdaUpdate()
-                .eq(Lib::getId, libId)
-                .set(Lib::getUpdateTime, new Date()));
+        libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, libId).set(Lib::getUpdateTime, new Date()));
         return true;
     }
 
@@ -114,6 +100,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
 
     @Override
     public PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize, boolean random, int userId) {
+        PageHelper.startPage(pageNum, pageSize);
         final Lib lib = libService.getById(libId);
         if (lib == null) {
             throw new IllegalDataException("该库不存在！");
@@ -121,7 +108,6 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         if (!userLibService.hasLib(userId, libId)) {
             throw new NoPermissionException("你没有此库的访问权");
         }
-        PageHelper.startPage(pageNum, pageSize);
         List<WordInfo> list = null;
         if (word == null || StringUtils.isBlank(word)) {
             list = wordMapper.getWordInfo(libId, null, random);
@@ -137,16 +123,15 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<Integer> importSingle(ImportWord word) throws IOException {
+    public boolean importSingle(ImportWord word) throws IOException {
         final Lib lib = libService.getById(word.getLibId());
         if (lib == null) {
             throw new CreateNewException("给定词库不存在，导入失败！");
         }
         final Word one = getOne(Wrappers.<Word>lambdaQuery().eq(Word::getWord, word.getWord()));
-        List<Integer> ids = new ArrayList<>();
         boolean insertExplain = false;
         TranslationResult translation = TranslationResult.translate(word.getWord());
-        //总词库里面没有该单词
+        //数据库里面没有该单词
         if (one == null) {
             //获取音标并插入
             word.setEnSymbol(translation.getEnSymbol());
@@ -156,22 +141,12 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             if (!save(word)) {
                 throw new CreateNewException("导入失败！");
             }
-            ids.add(word.getId());
             insertExplain = true;
         } else {
             word.setId(one.getId());
-            ids.add(word.getId());
-            // 总词库里面有，判断公共词库有没有
-            List<Integer> commonLibIds = libService.list(Wrappers
-                            .<Lib>lambdaQuery()
-                            .eq(Lib::getCommon, true))
-                    .stream()
-                    .map(Lib::getId)
-                    .collect(Collectors.toList());
-            int count = libWordService.count(Wrappers
-                    .<LibWord>lambdaQuery()
-                    .eq(LibWord::getWordId, one.getId())
-                    .in(LibWord::getLibId, commonLibIds));
+            // 数据库里面有，判断公共词库有没有
+            List<Integer> commonLibIds = libService.list(Wrappers.<Lib>lambdaQuery().eq(Lib::getCommon, true)).stream().map(Lib::getId).collect(Collectors.toList());
+            int count = libWordService.count(Wrappers.<LibWord>lambdaQuery().eq(LibWord::getWordId, one.getId()).in(LibWord::getLibId, commonLibIds));
             if (count == 0) {
                 //公共词库中没有该单词，需要插入释义
                 insertExplain = true;
@@ -189,22 +164,13 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             if (!explainService.saveBatch(explains)) {
                 throw new CreateNewException("释义导入失败！");
             }
-            for (WordExplain explain : explains) {
-                ids.add(explain.getId());
-            }
         }
         //将词库与单词关联
         if (!libWordService.save(new LibWord(lib.getId(), word.getId()))) {
             throw new CreateNewException("关联词库导入失败！");
         }
-        libService.update(Wrappers.<Lib>lambdaUpdate()
-                .eq(Lib::getId, lib.getId())
-                .set(Lib::getUpdateTime, new Date()));
-        if (!ids.isEmpty()) {
-            libService.update(Wrappers.<Lib>lambdaUpdate()
-                    .eq(Lib::getId, lib.getId())
-                    .set(Lib::getUpdateTime, new Date()));
-        }
-        return ids;
+        libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, lib.getId()).set(Lib::getUpdateTime, new Date()));
+        libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, lib.getId()).set(Lib::getUpdateTime, new Date()));
+        return true;
     }
 }

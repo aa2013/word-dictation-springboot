@@ -1,6 +1,5 @@
 package dictation.word.service.i.word;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
 import dictation.word.entity.word.ImportWord;
@@ -10,7 +9,6 @@ import dictation.word.entity.word.tables.Word;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author ljh
@@ -22,9 +20,9 @@ public interface WordService extends IService<Word> {
      * 导入单词
      *
      * @param word 待导入单词
-     * @return id，第一个为单词id，后续为释义 id
+     * @return 是否导入成功
      */
-    List<Integer> importSingle(ImportWord word) throws IOException;
+    boolean importSingle(ImportWord word) throws IOException;
 
     List<WordExplainInfo> getWordExplains(int wordId, int libId, int userId);
 

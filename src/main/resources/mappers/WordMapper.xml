@@ -8,11 +8,6 @@
         <result column="en_symbol" property="enSymbol"/>
         <result column="en_symbol_mp3" property="enSymbolMp3"/>
         <result column="us_symbol_mp3" property="usSymbolMp3"/>
-<!--        <association property="explain" column="{wordId=id,libId=lib_id}"-->
-<!--                     select="getDefaultWordExplainByLib">-->
-<!--            <result property="explanation" column="explanation"/>-->
-<!--            <result property="type" column="type"/>-->
-<!--        </association>-->
     </resultMap>
 
     <select id="getWordInfo" resultMap="wordInfo">
@@ -28,6 +23,15 @@
             order by rand()
         </if>
     </select>
+    <select id="getAllWordInfo" resultMap="wordInfo">
+        select * from word
+        <if test="word!=null and word!=''">
+            where word.word like concat('%',#{word},'%')
+        </if>
+        <if test="random==true">
+            order by rand()
+        </if>
+    </select>
     <!--    优先选择本库，否则选择公共库释义-->
     <select id="getDefaultWordExplainByLib" resultType="dictation.word.entity.word.Explain">
         select t.*
@@ -36,15 +40,13 @@
               where word_id = #{wordId}
                 and is_default = 1) as t
                  join lib
-                      on lib.id = t.lib_id and (lib.id = #{libId} or common = 1)
-        limit 1
+                      on lib.id = t.lib_id and (lib.id = #{libId} or common = 1) limit 1
     </select>
     <select id="getOtherLibExplains" resultType="dictation.word.entity.word.tables.WordExplain">
         select t.*
         from (select *
               from word_explain
-              where word_id = #{wordId}
-             )	as t
+              where word_id = #{wordId}) as t
                  join lib
                       on lib.id = t.lib_id and lib.id = #{libId}
 
