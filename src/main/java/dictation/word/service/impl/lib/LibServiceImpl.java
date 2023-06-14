@@ -11,6 +11,7 @@ import dictation.word.entity.lib.LibInfo;
 import dictation.word.entity.lib.tables.Lib;
 import dictation.word.entity.lib.tables.UserLib;
 import dictation.word.exception.CreateNewException;
+import dictation.word.exception.NoPermissionException;
 import dictation.word.service.i.lib.LibService;
 import dictation.word.service.i.lib.UserLibService;
 import dictation.word.utils.PageHelperUtil;
@@ -39,7 +40,10 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
 
     @Override
     public LibInfo getLibInfo(int libId, int userId) {
-        return null;
+        if (!userLibService.hasLib(userId,libId)) {
+            throw new NoPermissionException("你没有此库的访问权");
+        }
+        return libMapper.getLibInfo(libId, userId);
     }
 
     @Override

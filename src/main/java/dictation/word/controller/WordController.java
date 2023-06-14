@@ -29,7 +29,7 @@ public class WordController extends BaseController {
     WordService wordService;
 
     @PostMapping("/import/single")
-    public List<Integer> importSingle(@Valid ImportWord word) throws IOException {
+    public boolean importSingle(@Valid ImportWord word) throws IOException {
         return wordService.importSingle(word);
     }
 

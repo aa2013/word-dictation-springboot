@@ -76,7 +76,7 @@ public class HaiCiTranslator extends AbstractTranslator<Document> {
         List<Explain> res = new LinkedList<>();
         subLis.forEach(li -> {
             String type = li.child(0).text();
-            String[] means = li.child(1).text().split(";");
+            String[] means = li.child(1).text().split("；");
             List<Explain> temp = new ArrayList<>(means.length);
             for (String mean : means) {
                 temp.add(new Explain(mean, type));

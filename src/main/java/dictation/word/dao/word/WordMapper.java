@@ -18,6 +18,8 @@ import java.util.List;
 public interface WordMapper extends BaseMapper<Word> {
     List<WordInfo> getWordInfo(@Param("libId") int libId, @Param("word") String word, @Param("random") boolean random);
 
+    List<WordInfo> getAllWordInfo(@Param("word") String word, @Param("random") boolean random);
+
     List<Explain> getDefaultWordExplainByLib(@Param("wordId") int wordId, @Param("libId") int libId);
 
     List<WordExplain> getOtherLibExplains(@Param("wordId") int wordId, @Param("libId") int libId);
