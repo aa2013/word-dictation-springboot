@@ -26,6 +26,7 @@ public class HaiCiTranslator extends AbstractTranslator<Document> {
             String resp = NetUtil.get("https://dict.cn/search?q=" + word);
             this.data = Jsoup.parse(resp);
         } catch (Exception e) {
+
             e.printStackTrace();
             throw new UnavailableException("解析Html错误");
         }

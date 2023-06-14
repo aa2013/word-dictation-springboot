@@ -51,7 +51,9 @@ public class TranslationResult {
                 //获取音标发音链接
                 String[] symbolMp3s = translator.getSymbolMp3s();
                 //获取释义内容
-                temp.setExplains(translator.getExplains());
+                List<Explain> explainList = translator.getExplains();
+                //封装结果
+                temp.setExplains(explainList);
                 temp.setEnSymbol(symbols[0]);
                 temp.setUsSymbol(symbols[1]);
                 temp.setEnMp3(symbolMp3s[0]);

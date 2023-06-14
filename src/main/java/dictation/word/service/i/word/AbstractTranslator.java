@@ -7,7 +7,8 @@ import java.util.List;
 
 public abstract class AbstractTranslator<T> {
     /**
-     * 存储解析得到的源数据，有可能是 json，有可能是 html 的 document
+     * 存储解析得到的源数据，类型根据实际自定义
+     * 有可能是 json，也有可能是 html 的 document
      */
     protected T data = null;
 
