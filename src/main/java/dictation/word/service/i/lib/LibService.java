@@ -20,4 +20,6 @@ public interface LibService extends IService<Lib> {
     PageInfo<CommonLibInfo> getListCommon(int pageNum, int pageSize, int userId);
 
     LibInfo getLibInfo(int libId, int userId);
+
+    boolean updateLib(Lib lib, int userId);
 }

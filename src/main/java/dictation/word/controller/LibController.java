@@ -31,6 +31,11 @@ public class LibController extends BaseController {
         return libService.createLib(lib, getCurrentUserId());
     }
 
+    @PostMapping("/update")
+    public boolean updateLib(@Valid @RequestBody Lib lib) {
+        return libService.updateLib(lib, getCurrentUserId());
+    }
+
     @PostMapping("/add/{libId}")
     public boolean addLib(@PathVariable int libId) {
         return userLibService.addLib(libId, getCurrentUserId());

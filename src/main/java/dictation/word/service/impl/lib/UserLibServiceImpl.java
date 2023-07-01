@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import dictation.word.dao.lib.UserLibMapper;
 import dictation.word.entity.lib.tables.Lib;
 import dictation.word.entity.lib.tables.UserLib;
+import dictation.word.exception.DelException;
 import dictation.word.exception.NoPermissionException;
 import dictation.word.service.i.lib.LibService;
 import dictation.word.service.i.lib.UserLibService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -18,10 +20,19 @@ public class UserLibServiceImpl extends ServiceImpl<UserLibMapper, UserLib> impl
     LibService libService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean removeLib(int libId, int userId) {
-        return remove(Wrappers.<UserLib>lambdaQuery()
+        remove(Wrappers.<UserLib>lambdaQuery()
                 .eq(UserLib::getUserId, userId)
                 .eq(UserLib::getLibId, libId));
+        int uses = count(Wrappers.<UserLib>lambdaQuery()
+                .eq(UserLib::getLibId, libId));
+        if (uses == 0) {
+            if (!libService.removeById(libId)) {
+                throw new DelException("删除失败");
+            }
+        }
+        return true;
     }
 
     @Override
