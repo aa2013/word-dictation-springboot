@@ -53,6 +53,17 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public boolean removeByLibId(int libId) {
+        //删除库时删除对应的词库单词释义
+        explainService.remove(Wrappers.<WordExplain>lambdaQuery()
+                .eq(WordExplain::getLibId, libId));
+        explainCustomService.remove(Wrappers.<WordExplainCustom>lambdaQuery()
+                .eq(WordExplainCustom::getLibId, libId));
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean changeDefaultExplains(int libId, int wordId, int defaultId, int userId) {
         Lib lib = libService.getById(libId);
         if (lib.getCreator().equals(userId)) {
