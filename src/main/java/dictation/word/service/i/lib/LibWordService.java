@@ -8,4 +8,5 @@ import dictation.word.entity.lib.tables.LibWord;
  * @date 2022/12/14
  */
 public interface LibWordService extends IService<LibWord> {
+    boolean removeByLibId(int libId);
 }

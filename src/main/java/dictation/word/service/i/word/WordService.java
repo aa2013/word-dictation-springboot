@@ -29,4 +29,6 @@ public interface WordService extends IService<Word> {
     PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize, boolean random, int userId);
 
     boolean changeDefaultExplains(int libId, int wordId, int defaultId, int userId);
+
+    boolean removeByLibId(int libId);
 }
