@@ -4,6 +4,8 @@ package dictation.word.config;
 import dictation.word.filter.AuthenticationFilter;
 import dictation.word.filter.LoginFilter;
 import dictation.word.handler.CustomAccessDeniedHandler;
+import dictation.word.handler.CustomLogoutHandler;
+import dictation.word.handler.CustomLogoutSuccessHandler;
 import dictation.word.handler.UnAuthEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import javax.annotation.Resource;
 
 /**
  * @author ljh
@@ -24,12 +29,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    CustomLogoutHandler logoutHandler;
+    @Resource
+    CustomLogoutSuccessHandler logoutSuccessHandler;
     /**
      * 请求接口白名单
      */
     public static final String[] URL_LIST = {
             "/user/key",
             "/user/rsa",
+            "/user/forgetPwd/**",
+            "/user/register/**",
     };
 
     @Override
@@ -59,6 +71,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private void enableSecurity(HttpSecurity http) throws Exception {
         //取消 cors 和 csrf
         http.cors().and().csrf().disable()
+                .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout", "POST"))
+                .logoutSuccessHandler(logoutSuccessHandler)
+                .addLogoutHandler(logoutHandler)
+                .and()
                 //启用授权请求
                 .authorizeRequests()
                 //其它任何请求都进行认证

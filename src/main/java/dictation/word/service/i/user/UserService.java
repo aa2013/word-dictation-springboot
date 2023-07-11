@@ -9,4 +9,10 @@ import dictation.word.entity.user.User;
  */
 public interface UserService extends IService<User> {
     User getUserByAccount(String account);
+
+    boolean register(String email, String pwd, String pwdAgain, String emailCode);
+
+    boolean sendForgetPwdCode(String email);
+
+    boolean submitForgetPwdCode(String email, String code, String now, String again);
 }
