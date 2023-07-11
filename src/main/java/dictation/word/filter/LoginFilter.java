@@ -2,9 +2,9 @@ package dictation.word.filter;
 
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
-import dictation.word.entity.user.UserDetail;
 import dictation.word.entity.response.ResultBean;
 import dictation.word.entity.response.ResultCode;
+import dictation.word.entity.user.UserDetail;
 import dictation.word.utils.JwtUtils;
 import dictation.word.utils.RSAUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +70,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         // 认证通过处理
+        boolean remember = Boolean.parseBoolean(request.getParameter("remember"));
         UserDetail userDetail = (UserDetail) authResult.getPrincipal();
         String auth = authResult.getAuthorities().toString();
         // 构建 token subject
@@ -77,7 +78,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         account.put("uid", userDetail.getId());
         account.put("auth", auth);
         account.put("details", userDetail);
-        String token = JwtUtils.generateToken(account);
+        String token = JwtUtils.generateToken(account, remember);
         SecurityContextHolder.getContext().setAuthentication(authResult);
         response.setHeader(JwtUtils.getHeader(), token);
         response.setHeader("Access-control-Expose-Headers", JwtUtils.getHeader());
