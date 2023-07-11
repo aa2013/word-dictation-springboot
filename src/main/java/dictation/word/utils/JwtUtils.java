@@ -43,6 +43,10 @@ public class JwtUtils implements InitializingBean {
         return HEADER;
     }
 
+    public static void logout(String token) {
+        redis.delete(token);
+    }
+
     /**
      * 创建 token
      *
