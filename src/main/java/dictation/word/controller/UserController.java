@@ -31,6 +31,11 @@ public class UserController extends BaseController {
         return userService.register(email, pwd, pwdAgain, emailCode);
     }
 
+    @PostMapping("/updatePwd")
+    public boolean updatePwd(@NotBlank String old, @NotBlank String now, @NotBlank String again) {
+        return userService.updatePwd(old, now, again, getCurrentUserId());
+    }
+
     @PostMapping("/register/code")
     public boolean sendRegisterCode(@NotBlank String email) {
         return emailService.sendRegisterCode(email);

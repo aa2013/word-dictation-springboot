@@ -12,6 +12,8 @@ public interface UserService extends IService<User> {
 
     boolean register(String email, String pwd, String pwdAgain, String emailCode);
 
+    boolean updatePwd(String old, String now, String again, int userId);
+
     boolean sendForgetPwdCode(String email);
 
     boolean submitForgetPwdCode(String email, String code, String now, String again);

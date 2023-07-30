@@ -81,6 +81,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public boolean updatePwd(String old, String now, String again, int userId) {
+        User user = getById(userId);
+        if (!now.equals(again)) {
+            return false;
+        }
+        if (passwordEncoder.matches(old, user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(now));
+            return updateById(user);
+        }
+        return false;
+    }
+
+    @Override
     public User getUserByAccount(String account) {
         return getOne(Wrappers
                 .<User>lambdaQuery()
