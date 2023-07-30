@@ -7,7 +7,7 @@ spring:
     name: defaultDataSource
     type: com.alibaba.druid.pool.DruidDataSource
   profiles:
-    active: dev
+    active: pro
   jackson:
     time-zone: Asia/Shanghai
 

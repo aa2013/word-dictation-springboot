@@ -1,16 +1,45 @@
 # 应用服务 WEB 访问端口
 server:
-  port: 8093
+  port: 8099
+  servlet:
+    context-path: /word
 spring:
+  main:
+    allow-circular-references: true
   datasource:
+#    url: jdbc:mysql://coclyun.top:3336/word?useUnicode=true&serverTimezone=Asia/Shanghai&useSSL=false&characterEncoding=utf-8&noAccessToProcedureBodies=true&allowMultiQueries=true
     url: jdbc:mysql://localhost:3336/word?useUnicode=true&serverTimezone=Asia/Shanghai&useSSL=false&characterEncoding=utf-8&noAccessToProcedureBodies=true&allowMultiQueries=true
     username: word
     password: 123456
   redis:
+#    host: coclyun.top
     host: localhost
     password: root
     database: 0
+  mail:
+    # 使用 smtp 协议
+    protocol: smtp
+    host: smtp.qq.com
+    port: 587
+    username: 2439827731@qq.com
+    # 授权码
+    password: qplkdyvwctuwebje
+    test-connection: false
+    properties.mail.smtp.auth: false
+    properties.mail.debug: false
+    properties.mail.mime.splitlongparameters: false
+    default-encoding: UTF-8
 
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+custom:
+  email:
+    sender: 2439827731@qq.com
+
+qiniu:
+  accessKey: dG_7CKyJ7toEglclU_JFWcfwofkqMi6QyRIpQ0b1
+  secretKey: BLYmxcqrGltqf8tK9pfxCHWTCwg7OiEyESFHKVBT
+  bucketName: pic-common
+  domain: img.coclyun.top
