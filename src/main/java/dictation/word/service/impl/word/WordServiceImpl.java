@@ -111,7 +111,6 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
 
     @Override
     public PageInfo<WordInfo> search(int libId, String word, int pageNum, int pageSize, boolean random, int userId) {
-        PageHelper.startPage(pageNum, pageSize);
         final Lib lib = libService.getById(libId);
         if (lib == null) {
             throw new IllegalDataException("该库不存在！");
@@ -120,6 +119,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             throw new NoPermissionException("你没有此库的访问权");
         }
         List<WordInfo> list = null;
+        PageHelper.startPage(pageNum, pageSize);
         if (word == null || StringUtils.isBlank(word)) {
             list = wordMapper.getWordInfo(libId, null, random);
         } else {
@@ -135,6 +135,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean importSingle(ImportWord word) throws IOException {
+        // TODO: 2023/7/31 先获取是否存在，如果总词库中存在，则直接插入id
         final Lib lib = libService.getById(word.getLibId());
         if (lib == null) {
             throw new CreateNewException("给定词库不存在，导入失败！");
@@ -181,7 +182,11 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             throw new CreateNewException("关联词库导入失败！");
         }
         libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, lib.getId()).set(Lib::getUpdateTime, new Date()));
-        libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, lib.getId()).set(Lib::getUpdateTime, new Date()));
+        //插入总词库
+        if (!libWordService.save(new LibWord(1, word.getId()))) {
+            throw new CreateNewException("关联词库导入失败！");
+        }
+        libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, 1).set(Lib::getUpdateTime, new Date()));
         return true;
     }
 }
