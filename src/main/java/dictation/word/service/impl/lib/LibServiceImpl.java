@@ -70,9 +70,9 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
     }
 
     @Override
-    public PageInfo<CommonLibInfo> getListCommon(int pageNum, int pageSize, int userId) {
+    public PageInfo<CommonLibInfo> getListCommon(int pageNum, int pageSize, String search, int userId) {
         PageHelper.startPage(pageNum, pageSize);
-        List<LibInfo> commonLibList = libMapper.getCommonLibList();
+        List<LibInfo> commonLibList = libMapper.getCommonLibList(search);
         PageInfo<LibInfo> oldPageInfo = new PageInfo<>(commonLibList);
         List<UserLib> userLibs = userLibService.list(Wrappers.<UserLib>lambdaQuery().eq(UserLib::getUserId, userId));
         List<Integer> libIds = userLibs.stream().map(UserLib::getLibId).collect(Collectors.toList());

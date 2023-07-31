@@ -30,8 +30,11 @@
     <select id="getCommonLibList" resultMap="libInfo">
         select lib.*, u.user_name as creatorName
         from lib
-                 join user as u
-                      on u.id = creator
-                          and common = 1
+        join user as u
+        on u.id = creator
+        and common = 1
+        <if test="search!=null and !search.isEmpty()">
+            and lib_name like concat('%', #{search}, '%')
+        </if>
     </select>
 </mapper>

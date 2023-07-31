@@ -1,5 +1,6 @@
 package dictation.word.service.impl.plan;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -39,10 +40,16 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements Pl
     }
 
     @Override
-    public PageInfo<PlanInfo> getList(int pageNum, int pageSize, int userId) {
+    public PageInfo<PlanInfo> getList(int pageNum, int pageSize, String search, int userId) {
         PageHelper.startPage(pageNum, pageSize);
         List<Plan> list = list(Wrappers.<Plan>lambdaQuery()
-                .eq(Plan::getUserId, userId));
+                .eq(Plan::getUserId, userId)
+                .and(StringUtils.isNotBlank(search),
+                        query -> query.like(Plan::getName, search)
+                                .or()
+                                .like(Plan::getLibName, search)
+                )
+        );
         List<PlanInfo> data = new ArrayList<>(list.size());
         list.forEach(plan -> {
             int cnt = planWordService.getWordCnt(plan.getId());

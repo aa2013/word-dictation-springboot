@@ -7,7 +7,7 @@ import dictation.word.entity.plan.PlanInfo;
 import dictation.word.entity.plan.tables.Plan;
 
 public interface PlanService extends IService<Plan> {
-    PageInfo<PlanInfo> getList(int pageNum,int pageSize,int userId);
+    PageInfo<PlanInfo> getList(int pageNum, int pageSize, String search, int userId);
 
     boolean addPlan(PlanImport planImport, int userId);
 
