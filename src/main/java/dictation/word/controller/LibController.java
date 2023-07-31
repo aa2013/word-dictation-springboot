@@ -57,7 +57,7 @@ public class LibController extends BaseController {
     }
 
     @GetMapping("/list/common")
-    public PageInfo<CommonLibInfo> listCommon(int pageNum, int pageSize) {
-        return libService.getListCommon(pageNum, pageSize, getCurrentUserId());
+    public PageInfo<CommonLibInfo> listCommon(int pageNum, int pageSize, String search) {
+        return libService.getListCommon(pageNum, pageSize, search, getCurrentUserId());
     }
 }

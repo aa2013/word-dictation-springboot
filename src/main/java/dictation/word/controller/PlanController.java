@@ -20,8 +20,8 @@ public class PlanController extends BaseController {
     PlanWordService planWordService;
 
     @GetMapping("/list")
-    PageInfo<PlanInfo> getList(int pageNum, int pageSize) {
-        return planService.getList(pageNum, pageSize, getCurrentUserId());
+    PageInfo<PlanInfo> getList(int pageNum, int pageSize, String search) {
+        return planService.getList(pageNum, pageSize,search, getCurrentUserId());
     }
 
     @PostMapping("/add")
@@ -33,6 +33,7 @@ public class PlanController extends BaseController {
     List<PlanWord> getWords(@PathVariable int planId) {
         return planWordService.getWords(planId);
     }
+
     @PostMapping("/remove/{planId}")
     boolean deletePlan(@PathVariable int planId) {
         return planService.delete(planId);

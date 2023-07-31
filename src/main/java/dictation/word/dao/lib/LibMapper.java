@@ -18,5 +18,5 @@ public interface LibMapper extends BaseMapper<Lib> {
 
     LibInfo getLibInfo(@Param("libId") int libId, @Param("userId") int userId);
 
-    List<LibInfo> getCommonLibList();
+    List<LibInfo> getCommonLibList(@Param("search") String search);
 }

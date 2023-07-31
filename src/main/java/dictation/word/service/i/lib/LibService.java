@@ -17,7 +17,7 @@ public interface LibService extends IService<Lib> {
 
     List<LibInfo> getListSelf(int userId);
 
-    PageInfo<CommonLibInfo> getListCommon(int pageNum, int pageSize, int userId);
+    PageInfo<CommonLibInfo> getListCommon(int pageNum, int pageSize, String search, int userId);
 
     LibInfo getLibInfo(int libId, int userId);
 
