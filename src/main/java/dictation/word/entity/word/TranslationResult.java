@@ -72,7 +72,7 @@ public class TranslationResult {
             throw new UnavailableException("未设置翻译器");
         }
         if (result == null) {
-            throw new UnavailableException("查询失败，可能被翻译API禁止");
+            throw new UnavailableException("查询失败，单词不存在或被翻译API禁止");
         }
         return result;
     }

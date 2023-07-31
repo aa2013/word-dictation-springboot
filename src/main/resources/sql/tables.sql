@@ -37,7 +37,7 @@ CREATE TABLE `lib`  (
 -- ----------------------------
 -- Records of lib
 -- ----------------------------
-INSERT INTO `lib` VALUES (1, '总词库', '本词库中包含系统中所有的单词', 'http://img.coclyun.top/wordDictation/cover1.jpg', 1, 1, '2023-06-13 11:34:56', '2023-06-14 21:08:51');
+INSERT INTO `lib` VALUES (1, '总词库', '本词库中包含系统中所有的单词', 'http://img.coclyun.top/wordDictation/default_cover.jpg', 1, 1, '2023-06-13 11:34:56', '2023-06-14 21:08:51');
 
 -- ----------------------------
 -- Table structure for lib_word

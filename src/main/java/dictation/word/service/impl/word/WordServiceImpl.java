@@ -135,16 +135,16 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean importSingle(ImportWord word) throws IOException {
-        // TODO: 2023/7/31 先获取是否存在，如果总词库中存在，则直接插入id
         final Lib lib = libService.getById(word.getLibId());
         if (lib == null) {
             throw new CreateNewException("给定词库不存在，导入失败！");
         }
+        // 先获取是否存在，如果总词库中存在，则直接插入id
         final Word one = getOne(Wrappers.<Word>lambdaQuery().eq(Word::getWord, word.getWord()));
-        boolean insertExplain = false;
-        TranslationResult translation = TranslationResult.translate(word.getWord());
-        //数据库里面没有该单词
         if (one == null) {
+            //数据库里面没有该单词
+            //获取释义
+            TranslationResult translation = TranslationResult.translate(word.getWord());
             //获取音标并插入
             word.setEnSymbol(translation.getEnSymbol());
             word.setUsSymbol(translation.getUsSymbol());
@@ -153,40 +153,49 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             if (!save(word)) {
                 throw new CreateNewException("导入失败！");
             }
-            insertExplain = true;
-        } else {
-            word.setId(one.getId());
-            // 数据库里面有，判断公共词库有没有
-            List<Integer> commonLibIds = libService.list(Wrappers.<Lib>lambdaQuery().eq(Lib::getCommon, true)).stream().map(Lib::getId).collect(Collectors.toList());
-            int count = libWordService.count(Wrappers.<LibWord>lambdaQuery().eq(LibWord::getWordId, one.getId()).in(LibWord::getLibId, commonLibIds));
-            if (count == 0) {
-                //公共词库中没有该单词，需要插入释义
-                insertExplain = true;
-            }
-        }
-        if (insertExplain) {
             // 导入释义
             List<Explain> explainList = translation.getExplains();
             List<WordExplain> explains = new ArrayList<>(explainList.size());
             boolean first = true;
             for (Explain explain : explainList) {
+                //导入释义到本库
                 explains.add(new WordExplain(word.getId(), lib.getId(), explain, first));
+                //导入释义到总词库
+                explains.add(new WordExplain(word.getId(), 1, explain, first));
                 first = false;
             }
             if (!explainService.saveBatch(explains)) {
                 throw new CreateNewException("释义导入失败！");
             }
+            // 插入单词到总词库
+            if (!libWordService.save(new LibWord(1, word.getId()))) {
+                throw new CreateNewException("总词库导入失败！");
+            }
+            //更新总库时间
+            libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, 1)
+                    .set(Lib::getUpdateTime, new Date()));
+        } else {
+            //总库中存在，复制一份释义到本库
+            List<WordExplain> explainList = explainService.list(Wrappers.<WordExplain>lambdaQuery()
+                            .eq(WordExplain::getLibId, 1)
+                            .eq(WordExplain::getWordId, one.getId()))
+                    .stream()
+                    //复制到本库
+                    .peek(explain -> explain.setLibId(word.getLibId()))
+                    .collect(Collectors.toList());
+            // 保存
+            if (!explainService.saveBatch(explainList)) {
+                throw new CreateNewException("释义导入失败！");
+            }
         }
+        int newWordId = one == null ? word.getId() : one.getId();
         //将词库与单词关联
-        if (!libWordService.save(new LibWord(lib.getId(), word.getId()))) {
+        if (!libWordService.save(new LibWord(lib.getId(), newWordId))) {
             throw new CreateNewException("关联词库导入失败！");
         }
-        libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, lib.getId()).set(Lib::getUpdateTime, new Date()));
-        //插入总词库
-        if (!libWordService.save(new LibWord(1, word.getId()))) {
-            throw new CreateNewException("关联词库导入失败！");
-        }
-        libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, 1).set(Lib::getUpdateTime, new Date()));
+        //更新本库时间
+        libService.update(Wrappers.<Lib>lambdaUpdate().eq(Lib::getId, lib.getId())
+                .set(Lib::getUpdateTime, new Date()));
         return true;
     }
 }
