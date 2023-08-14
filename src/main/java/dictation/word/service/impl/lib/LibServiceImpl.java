@@ -11,6 +11,7 @@ import dictation.word.entity.lib.LibInfo;
 import dictation.word.entity.lib.tables.Lib;
 import dictation.word.entity.lib.tables.UserLib;
 import dictation.word.exception.CreateNewException;
+import dictation.word.exception.IllegalDataException;
 import dictation.word.exception.NoPermissionException;
 import dictation.word.exception.UnavailableException;
 import dictation.word.service.i.lib.LibService;
@@ -41,6 +42,9 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
 
     @Override
     public boolean updateLib(Lib lib, int userId) {
+        if (lib.getId() == 1) {
+            throw new IllegalDataException("不能修改根词库");
+        }
         Lib dbLib = getById(lib.getId());
         if (!dbLib.getCreator().equals(userId)) {
             throw new NoPermissionException("无权限修改他人创建的词库");
@@ -66,7 +70,9 @@ public class LibServiceImpl extends ServiceImpl<LibMapper, Lib> implements LibSe
         if (!userLibService.hasLib(userId, libId)) {
             throw new NoPermissionException("你没有此库的访问权");
         }
-        return libMapper.getLibInfo(libId, userId);
+        LibInfo libInfo = libMapper.getLibInfo(libId, userId);
+        libInfo.setSelf(libInfo.getCreator().equals(userId));
+        return libInfo;
     }
 
     @Override

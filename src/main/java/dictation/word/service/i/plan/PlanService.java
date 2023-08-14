@@ -11,5 +11,5 @@ public interface PlanService extends IService<Plan> {
 
     boolean addPlan(PlanImport planImport, int userId);
 
-    boolean delete(int planId);
+    boolean delete(int planId, int userId);
 }

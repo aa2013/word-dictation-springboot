@@ -17,10 +17,14 @@
                      select="dictation.word.dao.lib.UserLibMapper.getLibUseCnt"/>
     </resultMap>
     <select id="getUserLibList" resultMap="libInfo">
-        SELECT lib.*, u.user_name AS creatorName
-        FROM lib
-                 JOIN user_lib ON user_lib.lib_id = lib.id
-                 JOIN user AS u ON user_lib.user_id = u.id and u.id = #{userId}
+        select t.*, u.user_name as creatorName
+        from (SELECT lib.*
+              FROM lib
+                       JOIN user_lib ON user_lib.lib_id = lib.id
+                       JOIN user AS u ON user_lib.user_id = u.id
+                  AND u.id = #{userId}) t,
+             user as u
+        where u.id = t.creator
     </select>
     <select id="getLibInfo" resultMap="libInfo">
         SELECT lib.*, u.user_name AS creatorName

@@ -21,7 +21,7 @@ public class PlanController extends BaseController {
 
     @GetMapping("/list")
     PageInfo<PlanInfo> getList(int pageNum, int pageSize, String search) {
-        return planService.getList(pageNum, pageSize,search, getCurrentUserId());
+        return planService.getList(pageNum, pageSize, search, getCurrentUserId());
     }
 
     @PostMapping("/add")
@@ -36,6 +36,6 @@ public class PlanController extends BaseController {
 
     @PostMapping("/remove/{planId}")
     boolean deletePlan(@PathVariable int planId) {
-        return planService.delete(planId);
+        return planService.delete(planId, getCurrentUserId());
     }
 }
