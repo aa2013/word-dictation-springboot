@@ -30,7 +30,7 @@ public class WordController extends BaseController {
 
     @PostMapping("/import/single")
     public boolean importSingle(@Valid ImportWord word) throws IOException {
-        return wordService.importSingle(word);
+        return wordService.importSingle(word, getCurrentUserId());
     }
 
     @GetMapping("/list")
@@ -59,6 +59,6 @@ public class WordController extends BaseController {
 
     @GetMapping("/changeDefaultExplain")
     public boolean changeDefaultExplains(int libId, int wordId, int defaultId) {
-        return wordService.changeDefaultExplains(libId,wordId, defaultId,getCurrentUserId());
+        return wordService.changeDefaultExplains(libId, wordId, defaultId, getCurrentUserId());
     }
 }

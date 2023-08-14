@@ -12,6 +12,7 @@ import dictation.word.entity.plan.PlanInfo;
 import dictation.word.entity.plan.tables.Plan;
 import dictation.word.entity.plan.tables.PlanWord;
 import dictation.word.exception.IllegalDataException;
+import dictation.word.exception.NoPermissionException;
 import dictation.word.service.i.lib.LibService;
 import dictation.word.service.i.plan.PlanService;
 import dictation.word.service.i.plan.PlanWordService;
@@ -33,7 +34,11 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements Pl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean delete(int planId) {
+    public boolean delete(int planId, int userId) {
+        Plan plan = getById(planId);
+        if (!plan.getUserId().equals(userId)) {
+            throw new NoPermissionException("无权限删除他人创建的内容");
+        }
         removeById(planId);
         planWordService.removeAll(planId);
         return true;

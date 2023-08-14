@@ -20,9 +20,10 @@ public interface WordService extends IService<Word> {
      * 导入单词
      *
      * @param word 待导入单词
+     * @param userId 用户 id
      * @return 是否导入成功
      */
-    boolean importSingle(ImportWord word) throws IOException;
+    boolean importSingle(ImportWord word, int userId) throws IOException;
 
     List<WordExplainInfo> getWordExplains(int wordId, int libId, int userId);
 

@@ -134,10 +134,13 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean importSingle(ImportWord word) throws IOException {
+    public boolean importSingle(ImportWord word,int userId) throws IOException {
         final Lib lib = libService.getById(word.getLibId());
         if (lib == null) {
             throw new CreateNewException("给定词库不存在，导入失败！");
+        }
+        if (!lib.getCreator().equals(userId)) {
+            throw new NoPermissionException("只能导入到自己创建的词库中");
         }
         // 先获取是否存在，如果总词库中存在，则直接插入id
         final Word one = getOne(Wrappers.<Word>lambdaQuery().eq(Word::getWord, word.getWord()));
