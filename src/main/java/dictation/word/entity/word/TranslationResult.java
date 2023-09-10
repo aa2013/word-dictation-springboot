@@ -24,6 +24,7 @@ public class TranslationResult {
      */
     private static final List<AbstractTranslator<?>> translators = new ArrayList<>();
 
+    //配置你的翻译接口，配置顺序影响调用顺序
     static {
         translators.add(new HaiCiTranslator());
         translators.add(new CiBaTranslator());
