@@ -33,7 +33,7 @@ mybatis-plus:
 custom:
   email:
     sender: your-sender
-
+1
 qiniu:
   accessKey: your-accessKey
   secretKey: your-secretKey
