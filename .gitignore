@@ -3,8 +3,6 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-**/application-dev.yml
-**/application-pro.yml
 ### STS ###
 .apt_generated
 .classpath
