@@ -15,7 +15,6 @@ JDK 版本：JDK1.8
 
 注册和登录依赖邮件，需要自己在`application-dev.yml` 和 `application-pro.yml`中填入你自己的邮箱配置。
 
-
 项目用到了七牛云，主要用于存储单词本封面图片，七牛云免费10g，自己申请后填入 `application-dev.yml` 和 `application-pro.yml`配置文件就可以了
 
 其它的不多说了，很常规的三层架构，就写下翻译接口如何扩展：
